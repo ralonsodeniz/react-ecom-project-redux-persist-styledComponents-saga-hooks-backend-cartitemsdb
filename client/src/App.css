@@ -1,0 +1,15 @@
+/* To add a font we first go to google fonts and copy the html link and we put it in the index.htmnl and then we set the font as font-family in the element we want, in this case the body */
+body {
+  font-family: "Open Sans Condensed", sans-serif;
+  padding: 20px 60px; /* 20px top bottom 80px left and right */
+}
+
+a {
+  /* this is for the Links component not to have the aspect of an anchor. We could have done this in the header.styles.scss under .option classname but we want this to apply to every anchor tag (Link component is rendered as an anchor tag) */
+  text-decoration: none;
+  color: black;
+}
+
+* {
+  box-sizing: border-box;
+}

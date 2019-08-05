@@ -1,0 +1,75 @@
+.menu-item {
+  min-width: 30%;
+  height: 240px;
+  flex: 1 1 auto; // this will make the width to grow or shrink to adapt to the size of the flex row
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid black;
+  margin: 0 7.5px 15px;
+  overflow: hidden; // this allows us to have a background-image that grows but that is not going outside the boundaries of the parent div
+
+  &:hover {
+    cursor: pointer;
+
+    .background-image {
+      transform: scale(1.1);
+      transition: transform 6s cubic-bezier(0.25, 0.45, 0.45, 0.95);
+    }
+
+    & .content {
+      // putting & .classname appears to be the same as only putting .classname indented be careful that you need the space if not is like concatening
+      opacity: 0.9;
+    }
+  }
+
+  &.large {
+    // & means to the class above add the selector, in this case this selects the elements that chas de class "menu-item large"
+    height: 380px;
+  }
+
+  &:first-child {
+    // & means to the class above add the modifier, in this case first-child
+    // this is the same as writting .menu-item:first-child
+    margin-right: 7.5px;
+  }
+
+  &:last-child {
+    margin-left: 7.5px;
+  }
+
+  .background-image {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+  }
+
+  .content {
+    // since .content is indented inside .menu-item it will affect to the elements that has .content id but only inside .menu-item
+    // this is the same as .menu-item .content
+    height: 90px;
+    padding: 0 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    background-color: white;
+    opacity: 0.7;
+    position: absolute; // the reference for the postion is to its first positioned parent (not static), in this case the menu-item, this way we ignore the presence of another siblings in order to be placed inside the menu item
+
+    .title {
+      // same for .title classname, this way it will only affects the .title classnames elements children of .content classname elements children of .menu-item classname elements
+      font-weight: bold;
+      margin-bottom: 6px;
+      font-size: 22px;
+      color: #4a4a4a;
+    }
+
+    .subtitle {
+      font-weight: lighter;
+      font-size: 16px;
+    }
+  }
+}
