@@ -28,8 +28,8 @@ import { GlobalStyle } from "./global.styles";
 // this will replace the static import of HomePage
 const HomePage = lazy(() => import("./pages/homepage/homepage.component"));
 const ShopPage = lazy(() => import("./pages/shop/shop.component"));
-const SignInAndUpPage = lazy(() =>
-  import("./pages/sign-in-and-up/sign-in-and-up.component")
+const SignInAndUpPageContainer = lazy(() =>
+  import("./pages/sign-in-and-up/sign-in-and-up.container")
 );
 const CheckoutPage = lazy(() => import("./pages/checkout/checkout.component"));
 // because this is an async fucntion, depending on how fast the server is the user can encounter a blank page or even an error for a while during the lazy chunk is being loaded
@@ -109,7 +109,7 @@ const App = ({ checkUserSessionStart, currentUser }) => {
               exact
               path="/signin"
               render={() =>
-                currentUser ? <Redirect to="/" /> : <SignInAndUpPage />
+                currentUser ? <Redirect to="/" /> : <SignInAndUpPageContainer />
               }
             />
             {/* what we have done here is to conditionally render one of two components depending if currentUser exists or not */}
