@@ -2,7 +2,8 @@ import UserActionTypes from "./user.types";
 
 const INITIAL_STATE = {
   currentUser: null,
-  error: null
+  error: null,
+  isChecking: true
 };
 
 // we make changes into the reducer to addapt it to the new actions for the new sign up code
@@ -28,6 +29,16 @@ const userReducer = (state = INITIAL_STATE, action) => {
         ...state,
         currentUser: null,
         error: null
+      };
+    case UserActionTypes.CHECK_USER_SESSION_START:
+      return {
+        ...state,
+        isChecking: true
+      };
+    case UserActionTypes.CHECK_USER_SESSION_END:
+      return {
+        ...state,
+        isChecking: false
       };
     default:
       return state; // if none of the actions type match the ones in the state we want to return the same state we had

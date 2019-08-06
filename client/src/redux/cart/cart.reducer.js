@@ -2,7 +2,8 @@ import { CartActionTypes } from "./cart.types";
 import {
   addItemToCart,
   clearItemFromCart,
-  removeItemFromCart
+  removeItemFromCart,
+  clearAllItemsFromcart
 } from "./cart.utils";
 
 const INITIAL_STATE = {
@@ -35,7 +36,7 @@ const cartReducer = (state = INITIAL_STATE, action) => {
     case CartActionTypes.CLEAR_CART:
       return {
         ...state,
-        cartItems: []
+        cartItems: clearAllItemsFromcart()
       };
     case CartActionTypes.UPDATE_CART:
       return {

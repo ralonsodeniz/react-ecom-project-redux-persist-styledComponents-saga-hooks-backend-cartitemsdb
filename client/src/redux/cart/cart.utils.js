@@ -42,6 +42,17 @@ export const clearItemFromCart = (cartItems, cartItemToClear) => {
   return newCartItems;
 };
 
+export const clearAllItemsFromcart = () => {
+  const newCartItems = [];
+  // <- Comment if not wanted to update firestore on each item modified from cart ->
+  if (auth.currentUser) {
+    const userId = auth.currentUser.uid;
+    storeCartItems(newCartItems, userId);
+  }
+  // <- end of firestore realtime update ->
+  return newCartItems;
+};
+
 export const removeItemFromCart = (cartItems, cartItemToRemove) => {
   const newCartItems = cartItems.reduce((accumulator, cartItem) => {
     let tempArray = accumulator;

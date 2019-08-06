@@ -6,6 +6,7 @@ import { createStructuredSelector } from "reselect";
 
 import CartIcon from "../cart-icon/cart-icon.component";
 import CartDropdown from "../cart-dropdown/cart-dropdown.component";
+import SignInOrOutHeader from "../signin-out-header/signin-out-header.component";
 import {
   selectCartHidden,
   selectCartItems
@@ -18,7 +19,6 @@ import {
   HeaderContainer,
   LogoContainer,
   OptionsContainer,
-  OptionDivContainer,
   OptionLinkContainer
 } from "./header.styles";
 // import "./header.styles.scss";
@@ -32,21 +32,7 @@ const Header = ({ currentUser, hidden, signOutStart, cartItems }) => (
     <OptionsContainer>
       <OptionLinkContainer to="/shop">SHOP</OptionLinkContainer>
       <OptionLinkContainer to="/contact">CONTACT</OptionLinkContainer>
-      {currentUser ? (
-        //Instead of creating a second styled component with the same style properties than the OptionLinkContainer we could reuse it if the only difference is the element to return using the as= property | as="when it is an html element" as={when it is a component}
-        //<OptionLinkContainer as="div" onClick={() => auth.signOut()}>
-        //  SIGN OUT
-        //</OptionLinkContainer>
-        <OptionDivContainer
-          as="div"
-          onClick={() => signOutStart(cartItems, currentUser)}
-        >
-          {/* auth.signOut uses the communication channel opened between the app and firebase and sends a null user to the app when the user signs out */}
-          SIGN OUT
-        </OptionDivContainer>
-      ) : (
-        <OptionLinkContainer to="/signin">SIGN IN</OptionLinkContainer>
-      )}
+      <SignInOrOutHeader />
       <CartIcon />
     </OptionsContainer>
     {hidden ? null : <CartDropdown />}

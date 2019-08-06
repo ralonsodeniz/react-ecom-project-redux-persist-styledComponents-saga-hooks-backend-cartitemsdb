@@ -15,7 +15,8 @@ import {
   signOutSuccess,
   signOutFailure,
   signUpSuccess,
-  signUpFailure
+  signUpFailure,
+  checkUserSessionEnd
 } from "./user.action"; // we need this actions for our sagas to trigger user reducer updates
 import { updateCart } from "../cart/cart.actions";
 
@@ -94,16 +95,23 @@ export function* onEmailSignInStart() {
 export function* isUserAuthenticated() {
   try {
     const userAuth = yield getCurrentUser(); // we dont use call here because this is a Promise | we get the userAuth if there is a user logged in
-    if (!userAuth) return; // if the user is null (no user) we return, we dont want to do anything
-    // if there is a value we proceed to identify the user in our db
+    // if the user is null (no user) we return, we dont want to do anything
+    if (!userAuth) {
+      yield put(checkUserSessionEnd());
+      return; // if there is a value we proceed to identify the user in our db
+    }
     yield call(getSnapshotFromUserAuth, userAuth);
   } catch (error) {
     yield put(signInFailure(error)); // if there is an error on our check user firebase utility we return the error using the signInFailure since it is an error related to this
   }
+  yield put(checkUserSessionEnd());
 }
 
 export function* onCheckUserSession() {
-  yield takeLatest(UserActionTypes.CHECK_USER_SESSION, isUserAuthenticated);
+  yield takeLatest(
+    UserActionTypes.CHECK_USER_SESSION_START,
+    isUserAuthenticated
+  );
 }
 
 // Sagas to sign out

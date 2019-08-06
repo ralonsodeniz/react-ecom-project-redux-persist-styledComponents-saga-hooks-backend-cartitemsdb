@@ -33,8 +33,12 @@ export const signInFailure = error => ({
 
 // this action will be triggered when the app mounts to check if the user is still logged in
 // this will trigger a saga that will do this comprobation
-export const checkUserSession = () => ({
-  type: UserActionTypes.CHECK_USER_SESSION
+export const checkUserSessionStart = () => ({
+  type: UserActionTypes.CHECK_USER_SESSION_START
+});
+
+export const checkUserSessionEnd = () => ({
+  type: UserActionTypes.CHECK_USER_SESSION_END
 });
 
 // actions to incorporate sign out process to sagas
