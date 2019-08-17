@@ -3,7 +3,9 @@ import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
 import { toggleCartHidden } from "../../redux/cart/cart.actions";
+import { toggleAccountHidden } from "../../redux/account/account.actions";
 import { selectCartItemsCount } from "../../redux/cart/cart.selectors"; // we import our selector
+import { selectAccountHidden } from "../../redux/account/account.selectors";
 
 import {
   CartIconContainer,
@@ -13,16 +15,24 @@ import {
 // import "./cart-icon.styles.scss";
 
 const CartIcon = (
-  { toggleCartHidden, itemCount } // doing => () is the same than doing => {return()}
+  { toggleCartHidden, itemCount, toggleAccountHidden, accountHidden } // doing => () is the same than doing => {return()}
 ) => (
-  <CartIconContainer onClick={toggleCartHidden}>
+  <CartIconContainer
+    onClick={() => {
+      toggleCartHidden();
+      if (!accountHidden) {
+        toggleAccountHidden();
+      }
+    }}
+  >
     <ShoppingIconContainer />
     <ItemCountContainer>{itemCount}</ItemCountContainer>
   </CartIconContainer>
 );
 
 const mapDispatchToProps = dispatch => ({
-  toggleCartHidden: () => dispatch(toggleCartHidden())
+  toggleCartHidden: () => dispatch(toggleCartHidden()),
+  toggleAccountHidden: () => dispatch(toggleAccountHidden())
 });
 
 // const mapStateToProps = ({ cart: { cartItems } }) => ({
@@ -46,7 +56,8 @@ const mapDispatchToProps = dispatch => ({
 // instead of the old code we are now going to use the memoized selectors to pass the map the state to props only when the state that affect us changes
 
 const mapStateToProps = createStructuredSelector({
-  itemCount: selectCartItemsCount
+  itemCount: selectCartItemsCount,
+  accountHidden: selectAccountHidden
 });
 
 export default connect(

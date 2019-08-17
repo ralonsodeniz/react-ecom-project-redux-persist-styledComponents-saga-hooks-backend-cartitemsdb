@@ -71,3 +71,8 @@ export const signUpFailure = error => ({
   type: UserActionTypes.SIGN_UP_FAILURE,
   payload: error
 });
+
+export const updateAvatar = url => ({
+  type: UserActionTypes.UPDATE_AVATAR,
+  payload: url
+});

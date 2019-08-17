@@ -1,6 +1,7 @@
 import firebase from "firebase/app"; // we import firebase app
 import "firebase/firestore"; // we attach to the firebase app the database
 import "firebase/auth"; // we attach to the firebase app the auth system
+import "firebase/storage"; // we attach to the firebase app the storage system
 
 import { mergeCarts } from "../redux/cart/cart.utils";
 
@@ -10,7 +11,7 @@ const config = {
   authDomain: process.env.REACT_APP_FIREBASE_AUTHDOMAIN,
   databaseURL: process.env.REACT_APP_FIREBASE_DATABASEURL,
   projectId: process.env.REACT_APP_FIREBASE_PROJECTID,
-  storageBucket: "",
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGEBUCKET,
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGINGSENDERID,
   appId: process.env.REACT_APP_FIREBASE_APPID
 };
@@ -27,6 +28,7 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
     const { displayName, email } = userAuth; // we get the name and email from the google user obejct
     const createdAt = new Date(); // we create the date of registering
     const cartItems = [];
+    const avatarUrl = "";
     try {
       await userRef.set({
         // we use the documentRef to create the new document in the collection with its properties
@@ -34,6 +36,7 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
         email,
         createdAt,
         cartItems,
+        avatarUrl,
         ...additionalData
       });
     } catch (error) {
@@ -130,13 +133,23 @@ export const updateCartOnSignIn = async (userAuth, currentCartItems) => {
   }
   const mergedCart = mergeCarts(cartItems, currentCartItems);
   return mergedCart;
-  // if (currentCartItems.legnth < 1) return cartItems;
+};
+
+export const updateAvatarInDB = async url => {
+  const userId = auth.currentUser.uid;
+  const userRef = firestore.doc(`users/${userId}`);
+  try {
+    await userRef.update({ avatarUrl: url });
+  } catch (error) {
+    console.log(error, "error updating avatar url");
+  }
 };
 
 firebase.initializeApp(config); // we initialize the App using the config object
 
 export const auth = firebase.auth(); // we start to config the auth process
 export const firestore = firebase.firestore(); // we start the config of the db
+export const storage = firebase.storage(); // we create the storage object
 
 // start with google auth
 export const googleProvider = new firebase.auth.GoogleAuthProvider(); // this give us acceess to google auth provider

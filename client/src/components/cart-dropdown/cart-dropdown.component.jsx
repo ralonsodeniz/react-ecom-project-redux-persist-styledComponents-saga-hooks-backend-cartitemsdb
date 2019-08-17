@@ -4,6 +4,7 @@ import { createStructuredSelector } from "reselect";
 // import { Link } from "react-router-dom"; // withRouter allowed us to get access to route props without having to drill them down as component props | map, history and location objects
 import { withRouter } from "react-router-dom"; // withRouter allowed us to get access to route props without having to drill them down as component props | map, history and location objects
 
+import CustomButton from "../custom-button/custom-button.component";
 import CartItem from "../cart-item/cart-item.component";
 import { toggleCartHidden, clearCart } from "../../redux/cart/cart.actions";
 import { selectCartItems } from "../../redux/cart/cart.selectors";
@@ -12,7 +13,6 @@ import {
   CartDropdownComponent,
   CartItemsComponent,
   EmptyMessageContainer,
-  CartDropdownButton,
   CartDropDownButtonContainer,
   CartDropdownClearButton
 } from "./cart-dropdown.styles";
@@ -30,14 +30,14 @@ const CartDropdown = ({ cartItems, history, clearCart, toggleCartHidden }) => (
       )}
     </CartItemsComponent>
     <CartDropDownButtonContainer>
-      <CartDropdownButton
+      <CustomButton
         onClick={() => {
           history.push("/checkout");
           toggleCartHidden(); // instead of doing the whole mapDispatchToProps we just use the dispatch prop that connect passes to the component when we do not declare mapDispatchToProps and dispatches the action, dispatch(toggleCartHidden())
         }}
       >
         GO TO CHECKOUT
-      </CartDropdownButton>
+      </CustomButton>
       {/* This is the same as above but using Link component from react-router-dom
     <Link to="/checkout">
       <CustomButton>GO TO CHECKOUT</CustomButton>

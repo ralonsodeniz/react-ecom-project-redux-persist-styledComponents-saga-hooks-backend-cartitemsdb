@@ -6,12 +6,14 @@ import { createStructuredSelector } from "reselect";
 
 import CartIcon from "../cart-icon/cart-icon.component";
 import CartDropdown from "../cart-dropdown/cart-dropdown.component";
-import SignInOrOutHeader from "../signin-out-header/signin-out-header.component";
+import UserIcon from "../user-icon/user-icon.component";
+import AccountDropdown from "../account-dropdown/account-dropdown.component";
 import {
   selectCartHidden,
   selectCartItems
 } from "../../redux/cart/cart.selectors";
 import { selectCurrentUser } from "../../redux/user/user.selectors";
+import { selectAccountHidden } from "../../redux/account/account.selectors";
 import { signOutStart } from "../../redux/user/user.action";
 import { ReactComponent as Logo } from "../../assets/crown.svg";
 
@@ -24,7 +26,13 @@ import {
 // import "./header.styles.scss";
 // this is a special syntax in React for importing SVG.
 // The ReactComponent import name is special and tells Create React App that you want a React component that renders an SVG
-const Header = ({ currentUser, hidden, signOutStart, cartItems }) => (
+const Header = ({
+  currentUser,
+  hidden,
+  signOutStart,
+  cartItems,
+  accountHidden
+}) => (
   <HeaderContainer>
     <LogoContainer to="/">
       <Logo className="logo" />
@@ -32,10 +40,11 @@ const Header = ({ currentUser, hidden, signOutStart, cartItems }) => (
     <OptionsContainer>
       <OptionLinkContainer to="/shop">SHOP</OptionLinkContainer>
       <OptionLinkContainer to="/contact">CONTACT</OptionLinkContainer>
-      <SignInOrOutHeader />
+      <UserIcon />
+      {accountHidden ? null : <AccountDropdown />}
       <CartIcon />
+      {hidden ? null : <CartDropdown />}
     </OptionsContainer>
-    {hidden ? null : <CartDropdown />}
   </HeaderContainer>
 );
 
@@ -50,7 +59,8 @@ const Header = ({ currentUser, hidden, signOutStart, cartItems }) => (
 const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser,
   hidden: selectCartHidden,
-  cartItems: selectCartItems
+  cartItems: selectCartItems,
+  accountHidden: selectAccountHidden
 });
 
 // this is the same as

@@ -1,37 +1,44 @@
 import React from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
+import { withRouter } from "react-router-dom";
 
+import CustomButton from "../custom-button/custom-button.component";
 import { selectCartItems } from "../../redux/cart/cart.selectors";
 import {
   selectCurrentUser,
   selectIsCheckingUser
 } from "../../redux/user/user.selectors";
 import { signOutStart } from "../../redux/user/user.action";
+import { toggleAccountHidden } from "../../redux/account/account.actions";
 
-import {
-  OptionDivContainer,
-  OptionLinkContainer,
-  SpinnerContainer
-} from "./signin-out-header.styles";
+import { SpinnerContainer } from "./signin-out-header.styles";
 
 const SignInOrOutHeader = ({
   currentUser,
   isChecking,
   signOutStart,
-  cartItems
+  cartItems,
+  history,
+  toggleAccountHidden
 }) =>
   isChecking ? (
-    <SpinnerContainer />
+    <CustomButton>
+      <SpinnerContainer />
+    </CustomButton>
   ) : currentUser ? (
-    <OptionDivContainer
-      as="div"
-      onClick={() => signOutStart(cartItems, currentUser)}
-    >
+    <CustomButton onClick={() => signOutStart(cartItems, currentUser)}>
       SIGN OUT
-    </OptionDivContainer>
+    </CustomButton>
   ) : (
-    <OptionLinkContainer to="/signin">SIGN IN</OptionLinkContainer>
+    <CustomButton
+      onClick={() => {
+        history.push("/signin");
+        toggleAccountHidden();
+      }}
+    >
+      SIGN IN
+    </CustomButton>
   );
 
 const mapStateToProps = createStructuredSelector({
@@ -42,10 +49,13 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = dispatch => ({
   signOutStart: (cartItems, currentUser) =>
-    dispatch(signOutStart(cartItems, currentUser))
+    dispatch(signOutStart(cartItems, currentUser)),
+  toggleAccountHidden: () => dispatch(toggleAccountHidden())
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SignInOrOutHeader);
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(SignInOrOutHeader)
+);

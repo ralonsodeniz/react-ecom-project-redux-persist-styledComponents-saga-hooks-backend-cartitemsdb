@@ -48,6 +48,11 @@ const userReducer = (state = INITIAL_STATE, action) => {
         ...state,
         isChecking: false
       };
+    case UserActionTypes.UPDATE_AVATAR:
+      return {
+        ...state,
+        currentUser: { avatarUrl: action.payload }
+      };
     default:
       return state; // if none of the actions type match the ones in the state we want to return the same state we had
   }

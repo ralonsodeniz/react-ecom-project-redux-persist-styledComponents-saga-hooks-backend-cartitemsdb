@@ -21,11 +21,7 @@ export const CartDropDownButtonContainer = styled.div`
   margin-top: auto;
 `;
 
-export const CartDropdownButton = styled(CustomButton)`
-  margin: 1px;
-`;
-
-export const CartDropdownClearButton = styled(CartDropdownButton)`
+export const CartDropdownClearButton = styled(CustomButton)`
   background-color: red;
   height: 25px;
 `;

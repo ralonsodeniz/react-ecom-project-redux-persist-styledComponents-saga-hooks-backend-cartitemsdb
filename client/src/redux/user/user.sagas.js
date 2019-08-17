@@ -7,7 +7,8 @@ import {
   createUserProfileDocument,
   getCurrentUser,
   storeCartItems,
-  updateCartOnSignIn
+  updateCartOnSignIn,
+  updateAvatarInDB
 } from "../../firebase/firebase.utils"; // we need this from firebase utils for our generator function
 import {
   signInSuccess,
@@ -30,14 +31,15 @@ export function* getSnapshotFromUserAuth(userAuth, additionalData) {
       additionalData
     ); // remember calls first parameter is the function we want to run and the other parameters are the arguments of the function
     const userSnapshot = yield userRef.get();
-    const { createdAt, displayName, email } = userSnapshot.data();
+    const { createdAt, displayName, email, avatarUrl } = userSnapshot.data();
     yield put(
       // we dispatch the action with the payload we need to update our reducer
       signInSuccess({
         id: userSnapshot.id,
         createdAt,
         displayName,
-        email
+        email,
+        avatarUrl
       })
     );
   } catch (error) {
@@ -155,6 +157,14 @@ export function* onSignUpSuccess() {
   yield takeLatest(UserActionTypes.SIGN_UP_SUCCESS, signInAfterSignUp);
 }
 
+export function* storeAvatarDB({ payload }) {
+  yield call(updateAvatarInDB, payload);
+}
+
+export function* updateAvatar() {
+  yield takeLatest(UserActionTypes.UPDATE_AVATAR, storeAvatarDB);
+}
+
 // this generator function is the root saga creator for users
 export function* userSagas() {
   yield all([
@@ -163,6 +173,7 @@ export function* userSagas() {
     call(onCheckUserSession),
     call(onSignOutStart),
     call(onSignUpStart),
-    call(onSignUpSuccess)
+    call(onSignUpSuccess),
+    call(updateAvatar)
   ]);
 }

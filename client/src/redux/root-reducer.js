@@ -5,6 +5,7 @@ import userReducer from "./user/user.reducer";
 import cartReducer from "./cart/cart.reducer";
 import directoryReducer from "./directory/directory.reducer";
 import shopReducer from "./shop/shop.reducer";
+import accountReducer from "./account/account.reducer";
 
 // now we have to set the configuration for redux persist
 const persistConfig = {
@@ -19,7 +20,8 @@ const rootReducer = combineReducers({
   user: userReducer, // we give the userReducer a key inside the object we pass to the combine reducer so we can access its states inside the store using the user key
   cart: cartReducer,
   directory: directoryReducer,
-  shop: shopReducer
+  shop: shopReducer,
+  account: accountReducer
 });
 
 // what we export now is the persist reducer with the persistConfig and the rootReducer

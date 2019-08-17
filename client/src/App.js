@@ -32,6 +32,7 @@ const SignInAndUpPageContainer = lazy(() =>
   import("./pages/sign-in-and-up/sign-in-and-up.container")
 );
 const CheckoutPage = lazy(() => import("./pages/checkout/checkout.component"));
+const AccountPage = lazy(() => import("./pages/account/account.component"));
 // because this is an async fucntion, depending on how fast the server is the user can encounter a blank page or even an error for a while during the lazy chunk is being loaded
 // Thats why we need to use use Suspense
 // Suspense is a new react component that allows us to wrap any part of our application that may be rendering asyncs components, lazy loaded components
@@ -115,6 +116,7 @@ const App = ({ checkUserSessionStart, currentUser }) => {
             {/* what we have done here is to conditionally render one of two components depending if currentUser exists or not */}
             {/* <Redirect> router component allow us to change the path of a route to a new one so we can avoid to show sign in page when a user is logged in */}
             <Route exact path="/checkout" component={CheckoutPage} />
+            <Route exact path="/account" component={AccountPage} />
           </Suspense>
         </ErrorBoundary>
       </Switch>
