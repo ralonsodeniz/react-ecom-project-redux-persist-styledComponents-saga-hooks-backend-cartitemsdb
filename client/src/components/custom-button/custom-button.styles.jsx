@@ -63,5 +63,6 @@ export const CustomButtonContainer = styled.button`
   display: flex;
   justify-content: center;
   overflow: hidden;
+  margin: 1px;
   ${getButtonStyle}; /* we need to use string interpolation syntax to call the function inside the styled component  */
 `;

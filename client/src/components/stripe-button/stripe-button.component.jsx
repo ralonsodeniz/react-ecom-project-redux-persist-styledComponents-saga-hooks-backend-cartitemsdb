@@ -1,8 +1,20 @@
 import React from "react";
 import axios from "axios"; // axios is a library to make fetchs in a more potent way
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+
+import { selectCurrentUserEmail } from "../../redux/user/user.selectors";
+import { selectCartItems } from "../../redux/cart/cart.selectors";
+import { storeOrder } from "../../redux/user/user.action";
 
 import StripeCheckout from "react-stripe-checkout";
-const StripeCheckoutButton = ({ price }) => {
+
+const StripeCheckoutButton = ({
+  price,
+  currentUserEmail,
+  cartItems,
+  storeOrder
+}) => {
   // stripe need the value of the articles in cents
   const priceForStripe = price * 100;
   // this is the public key we get from stripe dev dashboard
@@ -19,9 +31,11 @@ const StripeCheckoutButton = ({ price }) => {
       }
     })
       .then(response => {
+        storeOrder(cartItems);
         alert("succesful payment");
       })
       .catch(error => {
+        storeOrder(cartItems);
         console.log("Payment Error: ", error);
         alert(
           "There was an issue with your payment! Please make sure you use the provided credit card."
@@ -41,10 +55,24 @@ const StripeCheckoutButton = ({ price }) => {
       panelLabel="Pay Now"
       token={onToken}
       stripeKey={publishableKey}
+      email={currentUserEmail}
     />
   );
 };
-export default StripeCheckoutButton;
+
+const mapStateToProps = createStructuredSelector({
+  currentUserEmail: selectCurrentUserEmail,
+  cartItems: selectCartItems
+});
+
+const mapDispatchToProps = dispatch => ({
+  storeOrder: cartItems => dispatch(storeOrder(cartItems))
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(StripeCheckoutButton);
 
 // token is the onsuccess callback that triggers when we submit
 // submission is triggered by this component and the token is the confirmation

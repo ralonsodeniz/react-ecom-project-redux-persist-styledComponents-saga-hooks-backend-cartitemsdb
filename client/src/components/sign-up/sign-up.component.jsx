@@ -28,6 +28,12 @@ const SignUp = ({ signUnStart }) => {
     }
 
     signUnStart(email, password, displayName);
+    setuserCredentials({
+      displayName: "",
+      email: "",
+      password: "",
+      confirmPassword: ""
+    });
 
     // <- WE MOVE THE SIGN UP TO THE USER SAGAS ->
     // try {

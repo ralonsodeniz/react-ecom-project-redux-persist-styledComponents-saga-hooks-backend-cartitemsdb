@@ -1,5 +1,7 @@
 import UserActionTypes from "./user.types";
 
+import { addNewAddress, removeAddress, addNewOrder } from "./user.utils";
+
 const INITIAL_STATE = {
   currentUser: null,
   error: null,
@@ -47,6 +49,44 @@ const userReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         isChecking: false
+      };
+    case UserActionTypes.UPDATE_AVATAR:
+      return {
+        ...state,
+        currentUser: { ...state.currentUser, avatarUrl: action.payload }
+      };
+    case UserActionTypes.ADD_ADDRESS:
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          addresses: addNewAddress(state.currentUser, action.payload)
+        }
+      };
+    case UserActionTypes.REMOVE_ADDRESS:
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          addresses: removeAddress(state.currentUser, action.payload)
+        }
+      };
+    case UserActionTypes.UPDATE_USERDATA:
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          displayName: action.payload.displayName,
+          email: action.payload.email
+        }
+      };
+    case UserActionTypes.STORE_ORDER:
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          orders: addNewOrder(state.currentUser, action.payload)
+        }
       };
     default:
       return state; // if none of the actions type match the ones in the state we want to return the same state we had

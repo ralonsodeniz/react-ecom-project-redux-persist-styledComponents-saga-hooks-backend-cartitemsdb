@@ -10,8 +10,8 @@ export const CartDropdownComponent = styled.div`
   padding: 20px;
   border: 1px solid black;
   background-color: white;
-  top: 90px;
-  right: 40px;
+  top: 35px;
+  right: 12px;
   z-index: 5;
 `;
 
@@ -21,11 +21,7 @@ export const CartDropDownButtonContainer = styled.div`
   margin-top: auto;
 `;
 
-export const CartDropdownButton = styled(CustomButton)`
-  margin: 1px;
-`;
-
-export const CartDropdownClearButton = styled(CartDropdownButton)`
+export const CartDropdownClearButton = styled(CustomButton)`
   background-color: red;
   height: 25px;
 `;

@@ -7,7 +7,11 @@ import {
   createUserProfileDocument,
   getCurrentUser,
   storeCartItems,
-  updateCartOnSignIn
+  updateCartOnSignIn,
+  updateAvatarInDB,
+  addNewAddressInDB,
+  removeAddressInDB,
+  updateUserDataInDB
 } from "../../firebase/firebase.utils"; // we need this from firebase utils for our generator function
 import {
   signInSuccess,
@@ -16,7 +20,11 @@ import {
   signOutFailure,
   signUpSuccess,
   signUpFailure,
-  checkUserSessionEnd
+  checkUserSessionEnd,
+  updateAvatar,
+  addNewAddress,
+  removeAddress,
+  updateUserData
 } from "./user.action"; // we need this actions for our sagas to trigger user reducer updates
 import { updateCart } from "../cart/cart.actions";
 
@@ -30,14 +38,22 @@ export function* getSnapshotFromUserAuth(userAuth, additionalData) {
       additionalData
     ); // remember calls first parameter is the function we want to run and the other parameters are the arguments of the function
     const userSnapshot = yield userRef.get();
-    const { createdAt, displayName, email } = userSnapshot.data();
+    const {
+      createdAt,
+      displayName,
+      email,
+      avatarUrl,
+      addresses
+    } = userSnapshot.data();
     yield put(
       // we dispatch the action with the payload we need to update our reducer
       signInSuccess({
         id: userSnapshot.id,
         createdAt,
         displayName,
-        email
+        email,
+        avatarUrl,
+        addresses
       })
     );
   } catch (error) {
@@ -155,6 +171,61 @@ export function* onSignUpSuccess() {
   yield takeLatest(UserActionTypes.SIGN_UP_SUCCESS, signInAfterSignUp);
 }
 
+export function* storeAvatarDB({ payload }) {
+  try {
+    yield call(updateAvatarInDB, payload);
+    yield put(updateAvatar(payload));
+  } catch (error) {
+    console.log("error adding avatar", error);
+  }
+}
+
+export function* updateAvatarDB() {
+  yield takeLatest(UserActionTypes.UPDATE_AVATAR_START, storeAvatarDB);
+}
+
+export function* storeNewAddressDB({ payload }) {
+  try {
+    yield addNewAddressInDB(payload);
+    yield put(addNewAddress(payload));
+  } catch (error) {
+    console.log("error adding address", error);
+  }
+}
+
+export function* addNewAddressDB() {
+  yield takeLatest(UserActionTypes.ADD_ADDRESS_START, storeNewAddressDB);
+}
+
+export function* removeStoredAddressDB({ payload }) {
+  try {
+    yield removeAddressInDB(payload);
+    yield put(removeAddress(payload));
+  } catch (error) {
+    console.log("error removing addres", error);
+  }
+}
+
+export function* removeAddressDB() {
+  yield takeLatest(UserActionTypes.REMOVE_ADDRESS_START, removeStoredAddressDB);
+}
+
+export function* updateStoredUserDataDB({ payload }) {
+  try {
+    yield updateUserDataInDB(payload);
+    yield put(updateUserData(payload));
+  } catch (error) {
+    console.log("error udpating user data", error);
+  }
+}
+
+export function* updateUserDataDB() {
+  yield takeLatest(
+    UserActionTypes.UPDATE_USERDATA_STARTS,
+    updateStoredUserDataDB
+  );
+}
+
 // this generator function is the root saga creator for users
 export function* userSagas() {
   yield all([
@@ -163,6 +234,10 @@ export function* userSagas() {
     call(onCheckUserSession),
     call(onSignOutStart),
     call(onSignUpStart),
-    call(onSignUpSuccess)
+    call(onSignUpSuccess),
+    call(updateAvatarDB),
+    call(addNewAddressDB),
+    call(removeAddressDB),
+    call(updateUserDataDB)
   ]);
 }

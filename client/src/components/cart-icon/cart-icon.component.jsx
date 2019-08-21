@@ -3,7 +3,13 @@ import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
 import { toggleCartHidden } from "../../redux/cart/cart.actions";
-import { selectCartItemsCount } from "../../redux/cart/cart.selectors"; // we import our selector
+// import { toggleAccountHidden } from "../../redux/account/account.actions";
+import {
+  selectCartItemsCount,
+  selectCartHidden
+} from "../../redux/cart/cart.selectors"; // we import our selector
+// import { selectAccountHidden } from "../../redux/account/account.selectors";
+import CartDropdown from "../cart-dropdown/cart-dropdown.component";
 
 import {
   CartIconContainer,
@@ -13,16 +19,33 @@ import {
 // import "./cart-icon.styles.scss";
 
 const CartIcon = (
-  { toggleCartHidden, itemCount } // doing => () is the same than doing => {return()}
+  {
+    toggleCartHidden,
+    itemCount,
+    // toggleAccountHidden,
+    // accountHidden,
+    hidden
+  } // doing => () is the same than doing => {return()}
 ) => (
-  <CartIconContainer onClick={toggleCartHidden}>
+  <CartIconContainer
+    // onClick={() => {
+    //   toggleCartHidden();
+    //   if (!accountHidden) {
+    //     toggleAccountHidden();
+    //   }
+    // }}
+    onMouseEnter={toggleCartHidden}
+    onMouseLeave={toggleCartHidden}
+  >
     <ShoppingIconContainer />
     <ItemCountContainer>{itemCount}</ItemCountContainer>
+    {!hidden || hidden === undefined ? null : <CartDropdown />}
   </CartIconContainer>
 );
 
 const mapDispatchToProps = dispatch => ({
   toggleCartHidden: () => dispatch(toggleCartHidden())
+  // toggleAccountHidden: () => dispatch(toggleAccountHidden())
 });
 
 // const mapStateToProps = ({ cart: { cartItems } }) => ({
@@ -46,7 +69,9 @@ const mapDispatchToProps = dispatch => ({
 // instead of the old code we are now going to use the memoized selectors to pass the map the state to props only when the state that affect us changes
 
 const mapStateToProps = createStructuredSelector({
-  itemCount: selectCartItemsCount
+  itemCount: selectCartItemsCount,
+  // accountHidden: selectAccountHidden,
+  hidden: selectCartHidden
 });
 
 export default connect(

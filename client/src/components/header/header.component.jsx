@@ -1,18 +1,15 @@
 import React from "react";
 // import { Link } from "react-router-dom";
-import { connect } from "react-redux"; // connect is a HOC (higher order component) that lets us moddify our component to have access to things related with redux, included the store
+// import { connect } from "react-redux"; // connect is a HOC (higher order component) that lets us moddify our component to have access to things related with redux, included the store
 // HOC are functions that takes components as arguments and then returns you a new modified component
-import { createStructuredSelector } from "reselect";
+// import { createStructuredSelector } from "reselect";
 
 import CartIcon from "../cart-icon/cart-icon.component";
-import CartDropdown from "../cart-dropdown/cart-dropdown.component";
-import SignInOrOutHeader from "../signin-out-header/signin-out-header.component";
-import {
-  selectCartHidden,
-  selectCartItems
-} from "../../redux/cart/cart.selectors";
-import { selectCurrentUser } from "../../redux/user/user.selectors";
-import { signOutStart } from "../../redux/user/user.action";
+// import CartDropdown from "../cart-dropdown/cart-dropdown.component";
+import UserIcon from "../user-icon/user-icon.component";
+// import AccountDropdown from "../account-dropdown/account-dropdown.component";
+// import { selectCartHidden } from "../../redux/cart/cart.selectors";
+// import { selectAccountHidden } from "../../redux/account/account.selectors";
 import { ReactComponent as Logo } from "../../assets/crown.svg";
 
 import {
@@ -24,7 +21,7 @@ import {
 // import "./header.styles.scss";
 // this is a special syntax in React for importing SVG.
 // The ReactComponent import name is special and tells Create React App that you want a React component that renders an SVG
-const Header = ({ currentUser, hidden, signOutStart, cartItems }) => (
+const Header = ({ hidden, accountHidden }) => (
   <HeaderContainer>
     <LogoContainer to="/">
       <Logo className="logo" />
@@ -32,10 +29,11 @@ const Header = ({ currentUser, hidden, signOutStart, cartItems }) => (
     <OptionsContainer>
       <OptionLinkContainer to="/shop">SHOP</OptionLinkContainer>
       <OptionLinkContainer to="/contact">CONTACT</OptionLinkContainer>
-      <SignInOrOutHeader />
+      <UserIcon />
+      {/* {accountHidden ? null : <AccountDropdown />} */}
       <CartIcon />
+      {/* {!hidden || hidden === undefined ? null : <CartDropdown />} */}
     </OptionsContainer>
-    {hidden ? null : <CartDropdown />}
   </HeaderContainer>
 );
 
@@ -47,11 +45,10 @@ const Header = ({ currentUser, hidden, signOutStart, cartItems }) => (
 // });
 // we use user selectors here create with reselect instead the default selectors
 
-const mapStateToProps = createStructuredSelector({
-  currentUser: selectCurrentUser,
-  hidden: selectCartHidden,
-  cartItems: selectCartItems
-});
+// const mapStateToProps = createStructuredSelector({
+//   hidden: selectCartHidden,
+//   accountHidden: selectAccountHidden
+// });
 
 // this is the same as
 // const mapStateToProps = state => ({
@@ -60,15 +57,8 @@ const mapStateToProps = createStructuredSelector({
 // });
 // createStructuredSelector() will automaticaly pass the top level state we get from mapStateToProps to the selectors
 
-const mapDispatchToProps = dispatch => ({
-  signOutStart: (cartItems, currentUser) =>
-    dispatch(signOutStart(cartItems, currentUser))
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Header); // this is currying, we pass two function,
+export default Header;
+// export default connect(mapStateToProps)(Header); // this is currying, we pass two function,
 // the first argument of the first function is going to be the function that allows us to access the state, the root reducer, then the second parameter is
 // the second one is the one that give us access to the actions we want to use to trigger updates on the store
 // the second function we pass is the component we want to be modified in order to have access to the store and actions that are passed as arguments of the first function

@@ -71,3 +71,53 @@ export const signUpFailure = error => ({
   type: UserActionTypes.SIGN_UP_FAILURE,
   payload: error
 });
+
+export const updateAvatarStart = url => ({
+  type: UserActionTypes.UPDATE_AVATAR_START,
+  payload: url
+});
+
+export const updateAvatar = url => ({
+  type: UserActionTypes.UPDATE_AVATAR,
+  payload: url
+});
+
+export const addNewAddressStart = address => ({
+  type: UserActionTypes.ADD_ADDRESS_START,
+  payload: address
+});
+
+export const addNewAddress = address => ({
+  type: UserActionTypes.ADD_ADDRESS,
+  payload: address
+});
+
+export const removeAddressStart = address => ({
+  type: UserActionTypes.REMOVE_ADDRESS_START,
+  payload: address
+});
+
+export const removeAddress = address => ({
+  type: UserActionTypes.REMOVE_ADDRESS,
+  payload: address
+});
+
+export const updateUserDataStarts = userCredentials => ({
+  type: UserActionTypes.UPDATE_USERDATA_STARTS,
+  payload: userCredentials
+});
+
+export const updateUserData = userCredentials => ({
+  type: UserActionTypes.UPDATE_USERDATA,
+  payload: userCredentials
+});
+
+export const storeOrderStarts = cartItems => ({
+  type: UserActionTypes.STORE_ORDER_STARTS,
+  payload: cartItems
+});
+
+export const storeOrder = cartItems => ({
+  type: UserActionTypes.STORE_ORDER,
+  payload: cartItems
+});

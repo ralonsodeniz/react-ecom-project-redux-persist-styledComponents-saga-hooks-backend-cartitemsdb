@@ -39,7 +39,7 @@ class ErrorBoundary extends Component {
     return this.state.hasError ? (
       <ErrorImageOverlay>
         <ErrorImageContainer imageUrl="https://i.imgur.com/A040Lxr.png" />
-        <ErrorImageText> Ooops lost in the web </ErrorImageText>
+        <ErrorImageText> Ooops lost in the www </ErrorImageText>
       </ErrorImageOverlay>
     ) : (
       this.props.children
