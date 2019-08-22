@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
 import { toggleCartHidden } from "../../redux/cart/cart.actions";
-// import { toggleAccountHidden } from "../../redux/account/account.actions";
+import { toggleAccountHidden } from "../../redux/account/account.actions";
 import {
   selectCartItemsCount,
   selectCartHidden
 } from "../../redux/cart/cart.selectors"; // we import our selector
-// import { selectAccountHidden } from "../../redux/account/account.selectors";
+import { selectAccountHidden } from "../../redux/account/account.selectors";
 import CartDropdown from "../cart-dropdown/cart-dropdown.component";
+import { DeviceTypeContext } from "../../providers/device-type/device-type.provider";
 
 import {
   CartIconContainer,
@@ -19,33 +20,44 @@ import {
 // import "./cart-icon.styles.scss";
 
 const CartIcon = (
-  {
-    toggleCartHidden,
-    itemCount,
-    // toggleAccountHidden,
-    // accountHidden,
-    hidden
-  } // doing => () is the same than doing => {return()}
-) => (
-  <CartIconContainer
-    // onClick={() => {
-    //   toggleCartHidden();
-    //   if (!accountHidden) {
-    //     toggleAccountHidden();
-    //   }
-    // }}
-    onMouseEnter={toggleCartHidden}
-    onMouseLeave={toggleCartHidden}
-  >
-    <ShoppingIconContainer />
-    <ItemCountContainer>{itemCount}</ItemCountContainer>
-    {!hidden || hidden === undefined ? null : <CartDropdown />}
-  </CartIconContainer>
-);
+  { toggleCartHidden, itemCount, toggleAccountHidden, accountHidden, hidden } // doing => () is the same than doing => {return()}
+) => {
+  const { isMobile } = useContext(DeviceTypeContext);
+
+  useEffect(() => {
+    toggleCartHidden();
+  }, [toggleCartHidden]);
+
+  // we create toggle functions for either desktop and mobile view, in mobile view we do not use the hover we use the click
+  const toggleCartHiddenDesktop = () => {
+    if (isMobile) return undefined;
+    toggleCartHidden();
+  };
+
+  const toggleCartHiddenMobile = () => {
+    if (!isMobile) return undefined;
+    toggleCartHidden();
+    if (!accountHidden) {
+      toggleAccountHidden();
+    }
+  };
+
+  return (
+    <CartIconContainer
+      onClick={toggleCartHiddenMobile}
+      onMouseEnter={toggleCartHiddenDesktop}
+      onMouseLeave={toggleCartHiddenDesktop}
+    >
+      <ShoppingIconContainer />
+      <ItemCountContainer>{itemCount}</ItemCountContainer>
+      {hidden || hidden === undefined ? null : <CartDropdown />}
+    </CartIconContainer>
+  );
+};
 
 const mapDispatchToProps = dispatch => ({
-  toggleCartHidden: () => dispatch(toggleCartHidden())
-  // toggleAccountHidden: () => dispatch(toggleAccountHidden())
+  toggleCartHidden: () => dispatch(toggleCartHidden()),
+  toggleAccountHidden: () => dispatch(toggleAccountHidden())
 });
 
 // const mapStateToProps = ({ cart: { cartItems } }) => ({
@@ -70,7 +82,7 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = createStructuredSelector({
   itemCount: selectCartItemsCount,
-  // accountHidden: selectAccountHidden,
+  accountHidden: selectAccountHidden,
   hidden: selectCartHidden
 });
 

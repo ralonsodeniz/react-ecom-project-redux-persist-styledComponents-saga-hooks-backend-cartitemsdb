@@ -30,3 +30,10 @@ export const addNewOrder = (currentUser, order) => {
   };
   return newOrders;
 };
+
+export const setDefaultAddress = (currentUser, addressIndex) => {
+  let newAddresses = currentUser.addresses;
+  const defaultAddress = newAddresses.splice(addressIndex, 1);
+  newAddresses.unshift(...defaultAddress);
+  return newAddresses;
+};

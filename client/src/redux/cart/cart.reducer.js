@@ -7,7 +7,7 @@ import {
 } from "./cart.utils";
 
 const INITIAL_STATE = {
-  hidden: true,
+  hidden: false, // we set to false as default since we need to make a toggleCartHidden to initialize cartHidden in the redux because of redux persist, if we remove the persist we have to set this to false
   cartItems: []
 };
 

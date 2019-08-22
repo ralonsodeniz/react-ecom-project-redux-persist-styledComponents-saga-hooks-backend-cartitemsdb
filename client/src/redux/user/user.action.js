@@ -121,3 +121,13 @@ export const storeOrder = cartItems => ({
   type: UserActionTypes.STORE_ORDER,
   payload: cartItems
 });
+
+export const updateDefaultAddressStarts = addressIndex => ({
+  type: UserActionTypes.SELECT_DEFAULT_ADDRESS_STARTS,
+  payload: addressIndex
+});
+
+export const updateDefaultAddress = addressIndex => ({
+  type: UserActionTypes.SELECT_DEFAULT_ADDRESS,
+  payload: addressIndex
+});

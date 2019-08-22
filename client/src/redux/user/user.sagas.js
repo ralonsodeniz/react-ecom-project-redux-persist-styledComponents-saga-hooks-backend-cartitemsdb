@@ -11,7 +11,9 @@ import {
   updateAvatarInDB,
   addNewAddressInDB,
   removeAddressInDB,
-  updateUserDataInDB
+  updateUserDataInDB,
+  storeOrderInDB,
+  updateDefaultAddressInDB
 } from "../../firebase/firebase.utils"; // we need this from firebase utils for our generator function
 import {
   signInSuccess,
@@ -24,7 +26,9 @@ import {
   updateAvatar,
   addNewAddress,
   removeAddress,
-  updateUserData
+  updateUserData,
+  storeOrder,
+  updateDefaultAddress
 } from "./user.action"; // we need this actions for our sagas to trigger user reducer updates
 import { updateCart } from "../cart/cart.actions";
 
@@ -43,7 +47,8 @@ export function* getSnapshotFromUserAuth(userAuth, additionalData) {
       displayName,
       email,
       avatarUrl,
-      addresses
+      addresses,
+      orders
     } = userSnapshot.data();
     yield put(
       // we dispatch the action with the payload we need to update our reducer
@@ -53,7 +58,8 @@ export function* getSnapshotFromUserAuth(userAuth, additionalData) {
         displayName,
         email,
         avatarUrl,
-        addresses
+        addresses,
+        orders
       })
     );
   } catch (error) {
@@ -226,6 +232,35 @@ export function* updateUserDataDB() {
   );
 }
 
+export function* updateStoredOrdersDB({ payload }) {
+  try {
+    yield storeOrderInDB(payload);
+    yield put(storeOrder(payload));
+  } catch (error) {
+    console.log("errror updating orders", error);
+  }
+}
+
+export function* updateOrdersDB() {
+  yield takeLatest(UserActionTypes.STORE_ORDER_STARTS, updateStoredOrdersDB);
+}
+
+export function* updateStoredDefaultAddressDB({ payload }) {
+  try {
+    yield updateDefaultAddressInDB(payload);
+    yield put(updateDefaultAddress(payload));
+  } catch (error) {
+    console.log("error updating default address", error);
+  }
+}
+
+export function* updateDefaultAddressDB() {
+  yield takeLatest(
+    UserActionTypes.SELECT_DEFAULT_ADDRESS_STARTS,
+    updateStoredDefaultAddressDB
+  );
+}
+
 // this generator function is the root saga creator for users
 export function* userSagas() {
   yield all([
@@ -238,6 +273,8 @@ export function* userSagas() {
     call(updateAvatarDB),
     call(addNewAddressDB),
     call(removeAddressDB),
-    call(updateUserDataDB)
+    call(updateUserDataDB),
+    call(updateOrdersDB),
+    call(updateDefaultAddressDB)
   ]);
 }

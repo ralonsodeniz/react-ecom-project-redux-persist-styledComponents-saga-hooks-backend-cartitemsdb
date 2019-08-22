@@ -181,12 +181,52 @@ export const updateUserDataInDB = async userCredentials => {
   const userRef = firestore.doc(`users/${userId}`);
   const { displayName, email } = userCredentials;
   try {
-    userRef.update({
+    await userRef.update({
       displayName,
       email
     });
   } catch (error) {
     console.log("failed to update user data", error);
+  }
+};
+
+export const storeOrderInDB = async order => {
+  const userId = auth.currentUser.uid;
+  const userRef = firestore.doc(`users/${userId}`);
+  const userSnapshot = await userRef.get();
+  try {
+    const { orders, addresses } = userSnapshot.data();
+    let newOrders = {};
+    if (orders !== null) {
+      newOrders = { ...orders };
+    }
+    const newOrderDate = new Date();
+    const newOrderKey = `${newOrderDate.getFullYear()}${newOrderDate.getMonth() +
+      1}${newOrderDate.getDate()}${newOrderDate.getHours()}${newOrderDate.getMinutes()}${newOrderDate.getSeconds()}`;
+    newOrders[newOrderKey] = {
+      date: newOrderDate,
+      items: order,
+      address: addresses[0]
+    };
+    await userRef.update({ orders: newOrders });
+  } catch (error) {
+    console.log("filed to update orders", error);
+  }
+};
+
+export const updateDefaultAddressInDB = async addressIndex => {
+  const userId = auth.currentUser.uid;
+  const userRef = firestore.doc(`users/${userId}`);
+  const userSnapshot = await userRef.get();
+  try {
+    const { addresses } = userSnapshot.data();
+    let newAddresses = addresses;
+    const newDefaultAddress = newAddresses.splice(addressIndex, 1);
+    newAddresses.unshift(...newDefaultAddress);
+    console.log(newAddresses);
+    await userRef.update({ addresses: newAddresses });
+  } catch (error) {
+    console.log("failed to update default address");
   }
 };
 

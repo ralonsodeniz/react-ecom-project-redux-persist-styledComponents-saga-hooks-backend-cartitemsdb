@@ -1,6 +1,11 @@
 import UserActionTypes from "./user.types";
 
-import { addNewAddress, removeAddress, addNewOrder } from "./user.utils";
+import {
+  addNewAddress,
+  removeAddress,
+  addNewOrder,
+  setDefaultAddress
+} from "./user.utils";
 
 const INITIAL_STATE = {
   currentUser: null,
@@ -86,6 +91,14 @@ const userReducer = (state = INITIAL_STATE, action) => {
         currentUser: {
           ...state.currentUser,
           orders: addNewOrder(state.currentUser, action.payload)
+        }
+      };
+    case UserActionTypes.SELECT_DEFAULT_ADDRESS:
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          addresses: setDefaultAddress(state.currentUser, action.payload)
         }
       };
     default:

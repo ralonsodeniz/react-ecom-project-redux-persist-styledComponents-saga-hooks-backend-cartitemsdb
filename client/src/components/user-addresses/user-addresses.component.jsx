@@ -7,9 +7,13 @@ import CustomButton from "../custom-button/custom-button.component";
 
 import {
   addNewAddressStart,
-  removeAddressStart
+  removeAddressStart,
+  updateDefaultAddressStarts
 } from "../../redux/user/user.action";
-import { selectCurrentUserAddreses } from "../../redux/user/user.selectors";
+import {
+  selectCurrentUserAddreses,
+  selectCurrentUser
+} from "../../redux/user/user.selectors";
 
 import {
   UserAddressesContainer,
@@ -24,7 +28,9 @@ import {
 const UserAddresses = ({
   addNewAddressStart,
   currentUserAddresses,
-  removeAddressStart
+  removeAddressStart,
+  currentUser,
+  updateDefaultAddressStarts
 }) => {
   const [newAddress, setNewAddress] = useState({
     addressName: "",
@@ -105,10 +111,19 @@ const UserAddresses = ({
       <SavedAddressesContainer>
         <h3>Saved addresses</h3>
         {currentUserAddresses !== undefined
-          ? currentUserAddresses.map(address => (
-              <AddressContainer key={address.addressName}>
+          ? currentUserAddresses.map((address, addressIndex) => (
+              <AddressContainer key={addressIndex}>
                 <AddressTitle>
-                  {address.addressName}
+                  {address.addressName}{" "}
+                  {addressIndex === 0 ? (
+                    " - default"
+                  ) : (
+                    <button
+                      onClick={() => updateDefaultAddressStarts(addressIndex)}
+                    >
+                      make default
+                    </button>
+                  )}
                   <RemoveButtonContainer
                     onClick={() => removeAddressStart(address)}
                   >
@@ -130,12 +145,15 @@ const UserAddresses = ({
 };
 
 const mapStateToProps = createStructuredSelector({
-  currentUserAddresses: selectCurrentUserAddreses // change to addresses: selectCurrentUserAddresses after adding withSpinner HOC
+  currentUserAddresses: selectCurrentUserAddreses, // change to addresses: selectCurrentUserAddresses after adding withSpinner HOC
+  currentUser: selectCurrentUser
 });
 
 const mapDispatchToProps = dispatch => ({
   addNewAddressStart: address => dispatch(addNewAddressStart(address)),
-  removeAddressStart: address => dispatch(removeAddressStart(address))
+  removeAddressStart: address => dispatch(removeAddressStart(address)),
+  updateDefaultAddressStarts: addressIndex =>
+    dispatch(updateDefaultAddressStarts(addressIndex))
 });
 
 export default connect(

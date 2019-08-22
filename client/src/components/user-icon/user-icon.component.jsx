@@ -1,44 +1,57 @@
-import React from "react";
+import React, { useContext } from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
 import { toggleAccountHidden } from "../../redux/account/account.actions";
-// import { toggleCartHidden } from "../../redux/cart/cart.actions";
-// import { selectCartHidden } from "../../redux/cart/cart.selectors";
+import { toggleCartHidden } from "../../redux/cart/cart.actions";
+import { selectCartHidden } from "../../redux/cart/cart.selectors";
 import { selectAccountHidden } from "../../redux/account/account.selectors";
 import AccountDropdown from "../account-dropdown/account-dropdown.component";
+import { DeviceTypeContext } from "../../providers/device-type/device-type.provider";
 
 import { UserIconContainer, UserLogoContainer } from "./user-icon.styles";
 
 const UserIcon = ({
   toggleAccountHidden,
-  // hidden,
-  // toggleCartHidden,
+  hidden,
+  toggleCartHidden,
   accountHidden
-}) => (
-  <UserIconContainer
-    // onClick={() => {
-    //   toggleAccountHidden();
-    //   if (!hidden) {
-    //     toggleCartHidden();
-    //   }
-    // }}
-    onMouseEnter={toggleAccountHidden}
-    onMouseLeave={toggleAccountHidden}
-  >
-    <UserLogoContainer />
-    {accountHidden ? null : <AccountDropdown />}
-  </UserIconContainer>
-);
+}) => {
+  const { isMobile } = useContext(DeviceTypeContext);
+
+  const toggleAccountHiddenDesktop = () => {
+    if (isMobile) return undefined;
+    toggleAccountHidden();
+  };
+
+  const toggleAccountHiddenMobile = () => {
+    if (!isMobile) return undefined;
+    toggleAccountHidden();
+    if (!hidden) {
+      toggleCartHidden();
+    }
+  };
+
+  return (
+    <UserIconContainer
+      onClick={toggleAccountHiddenMobile}
+      onMouseEnter={toggleAccountHiddenDesktop}
+      onMouseLeave={toggleAccountHiddenDesktop}
+    >
+      <UserLogoContainer />
+      {accountHidden ? null : <AccountDropdown />}
+    </UserIconContainer>
+  );
+};
 
 const mapStateToProps = createStructuredSelector({
-  accountHidden: selectAccountHidden
-  // hidden: selectCartHidden
+  accountHidden: selectAccountHidden,
+  hidden: selectCartHidden
 });
 
 const mapDispatchToProps = dispatch => ({
-  toggleAccountHidden: () => dispatch(toggleAccountHidden())
-  // toggleCartHidden: () => dispatch(toggleCartHidden())
+  toggleAccountHidden: () => dispatch(toggleAccountHidden()),
+  toggleCartHidden: () => dispatch(toggleCartHidden())
 });
 
 export default connect(

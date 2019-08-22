@@ -3,17 +3,21 @@ import axios from "axios"; // axios is a library to make fetchs in a more potent
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
-import { selectCurrentUserEmail } from "../../redux/user/user.selectors";
+import {
+  selectCurrentUserEmail,
+  selectCurrentUser
+} from "../../redux/user/user.selectors";
 import { selectCartItems } from "../../redux/cart/cart.selectors";
-import { storeOrder } from "../../redux/user/user.action";
+import { storeOrderStarts } from "../../redux/user/user.action";
 
 import StripeCheckout from "react-stripe-checkout";
 
 const StripeCheckoutButton = ({
   price,
+  currentUser,
   currentUserEmail,
   cartItems,
-  storeOrder
+  storeOrderStarts
 }) => {
   // stripe need the value of the articles in cents
   const priceForStripe = price * 100;
@@ -31,11 +35,15 @@ const StripeCheckoutButton = ({
       }
     })
       .then(response => {
-        storeOrder(cartItems);
+        if (currentUser) {
+          storeOrderStarts(cartItems);
+        }
         alert("succesful payment");
       })
       .catch(error => {
-        storeOrder(cartItems);
+        if (currentUser) {
+          storeOrderStarts(cartItems);
+        }
         console.log("Payment Error: ", error);
         alert(
           "There was an issue with your payment! Please make sure you use the provided credit card."
@@ -61,12 +69,13 @@ const StripeCheckoutButton = ({
 };
 
 const mapStateToProps = createStructuredSelector({
+  currentUser: selectCurrentUser,
   currentUserEmail: selectCurrentUserEmail,
   cartItems: selectCartItems
 });
 
 const mapDispatchToProps = dispatch => ({
-  storeOrder: cartItems => dispatch(storeOrder(cartItems))
+  storeOrderStarts: cartItems => dispatch(storeOrderStarts(cartItems))
 });
 
 export default connect(

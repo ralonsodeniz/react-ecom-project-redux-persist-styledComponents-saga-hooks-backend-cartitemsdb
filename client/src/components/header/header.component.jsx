@@ -21,21 +21,27 @@ import {
 // import "./header.styles.scss";
 // this is a special syntax in React for importing SVG.
 // The ReactComponent import name is special and tells Create React App that you want a React component that renders an SVG
-const Header = ({ hidden, accountHidden }) => (
-  <HeaderContainer>
-    <LogoContainer to="/">
-      <Logo className="logo" />
-    </LogoContainer>
-    <OptionsContainer>
-      <OptionLinkContainer to="/shop">SHOP</OptionLinkContainer>
-      <OptionLinkContainer to="/contact">CONTACT</OptionLinkContainer>
-      <UserIcon />
-      {/* {accountHidden ? null : <AccountDropdown />} */}
-      <CartIcon />
-      {/* {!hidden || hidden === undefined ? null : <CartDropdown />} */}
-    </OptionsContainer>
-  </HeaderContainer>
-);
+const Header = () => {
+  return (
+    //   {
+    //   hidden,
+    //   accountHidden
+    // }
+    <HeaderContainer>
+      <LogoContainer to="/">
+        <Logo className="logo" />
+      </LogoContainer>
+      <OptionsContainer>
+        <OptionLinkContainer to="/shop">SHOP</OptionLinkContainer>
+        <OptionLinkContainer to="/contact">CONTACT</OptionLinkContainer>
+        <UserIcon />
+        {/* {accountHidden ? null : <AccountDropdown />} */}
+        <CartIcon />
+        {/* {!hidden || hidden === undefined ? null : <CartDropdown />} */}
+      </OptionsContainer>
+    </HeaderContainer>
+  );
+};
 
 // const mapStateToProps = ({ user: { currentUser }, cart: { hidden } }) => ({
 // this is a way to deconstruct nested values, from state we deconstruct user and cart and from user we want currentUser and from cart we want hidden
