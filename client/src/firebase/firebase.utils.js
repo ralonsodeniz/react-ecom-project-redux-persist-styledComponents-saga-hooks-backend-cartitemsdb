@@ -28,7 +28,9 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
     const { displayName, email } = userAuth; // we get the name and email from the google user obejct
     const createdAt = new Date(); // we create the date of registering
     const cartItems = [];
-    const avatarUrl = "";
+    const avatarUrl = userAuth.photoURL ? userAuth.photoURL : "";
+    const addresses = [];
+    const orders = {};
     try {
       await userRef.set({
         // we use the documentRef to create the new document in the collection with its properties
@@ -37,7 +39,9 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
         createdAt,
         cartItems,
         avatarUrl,
-        ...additionalData
+        ...additionalData,
+        addresses,
+        orders
       });
     } catch (error) {
       console.log("error creating user", error.message);

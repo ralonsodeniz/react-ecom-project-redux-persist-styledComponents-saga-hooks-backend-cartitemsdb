@@ -112,7 +112,7 @@ const UserAddresses = ({
       </NewDAddressContainer>
       <SavedAddressesContainer>
         <h3>Saved addresses</h3>
-        {currentUserAddresses !== undefined
+        {currentUserAddresses.length > 0
           ? currentUserAddresses.map((address, addressIndex) => (
               <AddressContainer key={addressIndex}>
                 <AddressTitle>
