@@ -141,7 +141,7 @@ const UserAddresses = ({
                 </AddressContent>
               </AddressContainer>
             ))
-          : null}
+          : "No saved addresses"}
       </SavedAddressesContainer>
     </UserAddressesContainer>
   );

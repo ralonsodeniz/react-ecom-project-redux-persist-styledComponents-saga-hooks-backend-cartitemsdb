@@ -13,24 +13,27 @@ import {
 } from "./user-orders.styles";
 
 const UserOrders = ({ orders, history, match }) => {
-  console.log(orders);
   return (
     <UserOrdersContainer>
       <UserOrdersTitleContainer>User orders</UserOrdersTitleContainer>
       <UserOrdersListContainer>
-        {Object.entries(orders).map((
-          [key, value] // Object.entries returns an array of [key, value] for each entry in the object
-        ) => (
-          <OrderContainer key={key}>
-            <OrderTitle onClick={() => history.push(`${match.path}/${key}`)}>
-              {`Order date : ${value.date.year}, ${value.date.month} ${
-                value.date.day
-              }`}
-            </OrderTitle>
-            Items : {value.items.length} <br />
-            Price : {value.total}
-          </OrderContainer>
-        ))}
+        {orders
+          ? Object.entries(orders).map((
+              [key, value] // Object.entries returns an array of [key, value] for each entry in the object
+            ) => (
+              <OrderContainer key={key}>
+                <OrderTitle
+                  onClick={() => history.push(`${match.path}/${key}`)}
+                >
+                  {`Order date : ${value.date.year}, ${value.date.month} ${
+                    value.date.day
+                  }`}
+                </OrderTitle>
+                Items : {value.items.length} <br />
+                Price : {value.total}
+              </OrderContainer>
+            ))
+          : "No previous orders"}
       </UserOrdersListContainer>
     </UserOrdersContainer>
   );
