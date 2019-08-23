@@ -7,6 +7,7 @@ import { toggleCartHidden } from "../../redux/cart/cart.actions";
 import { selectCartHidden } from "../../redux/cart/cart.selectors";
 import { selectAccountHidden } from "../../redux/account/account.selectors";
 import AccountDropdown from "../account-dropdown/account-dropdown.component";
+import OnClickOutside from "../onclick-outside/onclick-outside.component";
 import { DeviceTypeContext } from "../../providers/device-type/device-type.provider";
 
 import { UserIconContainer, UserLogoContainer } from "./user-icon.styles";
@@ -27,20 +28,22 @@ const UserIcon = ({
   const toggleAccountHiddenMobile = () => {
     if (!isMobile) return undefined;
     toggleAccountHidden();
-    if (!hidden) {
-      toggleCartHidden();
-    }
   };
 
   return (
-    <UserIconContainer
-      onClick={toggleAccountHiddenMobile}
-      onMouseEnter={toggleAccountHiddenDesktop}
-      onMouseLeave={toggleAccountHiddenDesktop}
+    <OnClickOutside
+      action={!accountHidden ? toggleAccountHidden : undefined}
+      enabled={isMobile}
     >
-      <UserLogoContainer />
-      {accountHidden ? null : <AccountDropdown />}
-    </UserIconContainer>
+      <UserIconContainer
+        onClick={toggleAccountHiddenMobile}
+        onMouseEnter={toggleAccountHiddenDesktop}
+        onMouseLeave={toggleAccountHiddenDesktop}
+      >
+        <UserLogoContainer />
+        {accountHidden ? null : <AccountDropdown />}
+      </UserIconContainer>
+    </OnClickOutside>
   );
 };
 

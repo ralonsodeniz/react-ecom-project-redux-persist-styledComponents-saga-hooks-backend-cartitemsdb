@@ -22,7 +22,9 @@ import {
   AddressContainer,
   AddressTitle,
   AddressContent,
-  RemoveButtonContainer
+  RemoveButtonContainer,
+  DefaultAddressLabel,
+  MakeDefaultAddressButton
 } from "./user-addresses.styles";
 
 const UserAddresses = ({
@@ -114,22 +116,23 @@ const UserAddresses = ({
           ? currentUserAddresses.map((address, addressIndex) => (
               <AddressContainer key={addressIndex}>
                 <AddressTitle>
-                  {address.addressName}{" "}
-                  {addressIndex === 0 ? (
-                    " - default"
-                  ) : (
-                    <button
-                      onClick={() => updateDefaultAddressStarts(addressIndex)}
-                    >
-                      make default
-                    </button>
-                  )}
+                  {address.addressName}
                   <RemoveButtonContainer
                     onClick={() => removeAddressStart(address)}
                   >
                     &#10005;
                   </RemoveButtonContainer>
                 </AddressTitle>
+                {addressIndex === 0 ? (
+                  <DefaultAddressLabel>default</DefaultAddressLabel>
+                ) : (
+                  <MakeDefaultAddressButton
+                    inverted
+                    onClick={() => updateDefaultAddressStarts(addressIndex)}
+                  >
+                    make default
+                  </MakeDefaultAddressButton>
+                )}
                 <AddressContent>
                   {address.street} - {address.postcode}
                 </AddressContent>

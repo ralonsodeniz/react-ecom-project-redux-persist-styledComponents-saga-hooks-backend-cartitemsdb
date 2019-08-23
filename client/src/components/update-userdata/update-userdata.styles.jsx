@@ -4,8 +4,6 @@ const mainColor = "black";
 
 export const UpdateUserDataContainer = styled.div`
   display: grid;
-  justify-content: center;
-  /* align-items: center; */
 `;
 
 export const UpdateUserDataTitleContainer = styled.h2`

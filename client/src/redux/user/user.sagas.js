@@ -235,7 +235,8 @@ export function* updateUserDataDB() {
 export function* updateStoredOrdersDB({ payload }) {
   try {
     yield storeOrderInDB(payload);
-    yield put(storeOrder(payload));
+    const { order, price } = payload;
+    yield put(storeOrder(order, price));
   } catch (error) {
     console.log("errror updating orders", error);
   }

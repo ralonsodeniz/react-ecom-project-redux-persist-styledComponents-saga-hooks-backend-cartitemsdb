@@ -33,7 +33,7 @@ const CartDropdown = ({ cartItems, history, clearCart, toggleCartHidden }) => (
       <CustomButton
         onClick={() => {
           history.push("/checkout");
-          toggleCartHidden(); // instead of doing the whole mapDispatchToProps we just use the dispatch prop that connect passes to the component when we do not declare mapDispatchToProps and dispatches the action, dispatch(toggleCartHidden())
+          // toggleCartHidden(); // instead of doing the whole mapDispatchToProps we just use the dispatch prop that connect passes to the component when we do not declare mapDispatchToProps and dispatches the action, dispatch(toggleCartHidden())
         }}
       >
         GO TO CHECKOUT

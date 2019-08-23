@@ -147,7 +147,6 @@ const App = ({ checkUserSessionStart, currentUser, isCheckingUser }) => {
             {/* <Redirect> router component allow us to change the path of a route to a new one so we can avoid to show sign in page when a user is logged in */}
             <Route exact path="/checkout" component={CheckoutPage} />
             <Route
-              exact
               path="/account"
               render={() =>
                 !currentUser && !isCheckingUser ? (

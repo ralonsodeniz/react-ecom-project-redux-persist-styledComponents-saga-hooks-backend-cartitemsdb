@@ -58,7 +58,6 @@ export const LableFileContainer = styled.label`
   font-family: "Open Sans Condensed";
   font-weight: bolder;
   cursor: pointer;
-  display: flex;
   justify-content: center;
   overflow: hidden;
   margin: 1px;

@@ -31,8 +31,8 @@ const AccountDropdown = ({
     } else {
       history.push("/signin");
     }
-    toggleAccountHidden();
-  }, [currentUser, history, toggleAccountHidden]);
+    // toggleAccountHidden();
+  }, [currentUser, history]);
 
   return (
     <AccountDropdownContainer>

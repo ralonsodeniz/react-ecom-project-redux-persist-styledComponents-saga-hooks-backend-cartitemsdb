@@ -102,7 +102,7 @@ const ShopPage = ({ fetchCollectionsStart, match }) => {
           //   <CollectionsOverviewWithSpinner
           //     isLoading={!isCollectionsLoaded}
           //     {...props}
-          // we switch bak to component since we do not need to pass props to the component we are rendering through Route
+          // we switch back to component since we do not need to pass props to the component we are rendering through Route
           // here we pass to the HOC created with WithSpinner the two arguments of
           // the second parameter of the HOC function
           component={CollectionsOverviewContainer}

@@ -190,7 +190,7 @@ export const updateUserDataInDB = async userCredentials => {
   }
 };
 
-export const storeOrderInDB = async order => {
+export const storeOrderInDB = async ({ order, price }) => {
   const userId = auth.currentUser.uid;
   const userRef = firestore.doc(`users/${userId}`);
   const userSnapshot = await userRef.get();
@@ -203,9 +203,57 @@ export const storeOrderInDB = async order => {
     const newOrderDate = new Date();
     const newOrderKey = `${newOrderDate.getFullYear()}${newOrderDate.getMonth() +
       1}${newOrderDate.getDate()}${newOrderDate.getHours()}${newOrderDate.getMinutes()}${newOrderDate.getSeconds()}`;
+    let orderMonth = "";
+    switch (newOrderDate.getMonth()) {
+      case 0:
+        orderMonth = "January";
+        break;
+      case 1:
+        orderMonth = "February";
+        break;
+      case 2:
+        orderMonth = "March";
+        break;
+      case 3:
+        orderMonth = "April";
+        break;
+      case 4:
+        orderMonth = "May";
+        break;
+      case 5:
+        orderMonth = "June";
+        break;
+      case 6:
+        orderMonth = "July";
+        break;
+      case 7:
+        orderMonth = "August";
+        break;
+      case 8:
+        orderMonth = "September";
+        break;
+      case 9:
+        orderMonth = "October";
+        break;
+      case 10:
+        orderMonth = "November";
+        break;
+      case 11:
+        orderMonth = "December";
+        break;
+      default:
+        break;
+    }
     newOrders[newOrderKey] = {
-      date: newOrderDate,
+      date: {
+        year: newOrderDate.getFullYear(),
+        month: orderMonth,
+        day: newOrderDate.getDate(),
+        hour: newOrderDate.getHours(),
+        minutes: newOrderDate.getMinutes()
+      },
       items: order,
+      total: price,
       address: addresses[0]
     };
     await userRef.update({ orders: newOrders });

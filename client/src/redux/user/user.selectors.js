@@ -35,8 +35,19 @@ export const selectCurrentUserDisplayName = createSelector(
 export const selectCurrentUserEmail = createSelector(
   [selectCurrentUser],
   currentUser => {
-    // if there is not user logged in we return undefined as email so in the stripe component it asks for an email in the payment form
+    // if there is not user logged in we return false as email so in the stripe component it asks for an email in the payment form
     if (currentUser) return currentUser.email;
-    return undefined;
+    return false;
   }
 );
+
+export const selectCurrentUserOrders = createSelector(
+  [selectCurrentUser],
+  currentUser => currentUser.orders
+);
+
+export const selectCurrentUserOrder = orderUrlParam =>
+  createSelector(
+    [selectCurrentUserOrders],
+    orders => (orders ? orders[orderUrlParam] : null)
+  );

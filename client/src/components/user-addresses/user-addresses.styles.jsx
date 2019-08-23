@@ -1,12 +1,9 @@
 import styled from "styled-components";
 
+import CustomButton from "../custom-button/custom-button.component";
+
 export const UserAddressesContainer = styled.div`
   display: grid;
-  justify-content: center;
-
-  @media screen and (max-width: 800px) {
-    margin-top: -61px;
-  }
 `;
 
 export const NewDAddressContainer = styled.div`
@@ -33,6 +30,35 @@ export const AddressTitle = styled.h5`
   display: flex;
   font-size: 18px;
   width: 100%;
+  margin-bottom: 5px;
+`;
+
+export const DefaultAddressLabel = styled.label`
+  display: flex;
+  align-items: center;
+  width: min-content;
+  height: auto;
+  letter-spacing: 0.5px;
+  text-align: center;
+  padding: 0 35px 0 35px;
+  font-size: 15px;
+  text-transform: uppercase;
+  font-family: "Open Sans Condensed";
+  font-weight: bolder;
+  justify-content: center;
+  overflow: hidden;
+  background-color: black;
+  color: white;
+  border: 1px solid transparent;
+`;
+
+export const MakeDefaultAddressButton = styled(CustomButton)`
+  width: max-content;
+  height: min-content;
+
+  &:hover {
+    border: 1px solid black;
+  }
 `;
 
 export const RemoveButtonContainer = styled.div`

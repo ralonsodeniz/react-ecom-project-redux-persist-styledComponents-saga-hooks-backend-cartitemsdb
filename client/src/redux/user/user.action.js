@@ -112,14 +112,14 @@ export const updateUserData = userCredentials => ({
   payload: userCredentials
 });
 
-export const storeOrderStarts = cartItems => ({
+export const storeOrderStarts = (cartItems, price) => ({
   type: UserActionTypes.STORE_ORDER_STARTS,
-  payload: cartItems
+  payload: { order: cartItems, price }
 });
 
-export const storeOrder = cartItems => ({
+export const storeOrder = (order, price) => ({
   type: UserActionTypes.STORE_ORDER,
-  payload: cartItems
+  payload: { order, price }
 });
 
 export const updateDefaultAddressStarts = addressIndex => ({
