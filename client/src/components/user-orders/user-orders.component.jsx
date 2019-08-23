@@ -17,7 +17,7 @@ const UserOrders = ({ orders, history, match }) => {
     <UserOrdersContainer>
       <UserOrdersTitleContainer>User orders</UserOrdersTitleContainer>
       <UserOrdersListContainer>
-        {Object.keys(orders) > 0
+        {Object.keys(orders).length > 0
           ? Object.entries(orders).map((
               [key, value] // Object.entries returns an array of [key, value] for each entry in the object
             ) => (
