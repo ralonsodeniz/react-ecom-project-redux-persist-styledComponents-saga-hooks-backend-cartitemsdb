@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import axios from "axios"; // axios is a library to make fetchs in a more potent way
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
@@ -6,12 +6,13 @@ import { createStructuredSelector } from "reselect";
 import {
   selectCurrentUserEmail,
   selectCurrentUser,
-  selectIsCheckingUser
+  selectIsCheckingUser,
+  selectCurrentUserAddreses
 } from "../../redux/user/user.selectors";
 import { selectCartItems } from "../../redux/cart/cart.selectors";
 import { storeOrderStarts } from "../../redux/user/user.action";
 import { clearCart } from "../../redux/cart/cart.actions";
-
+import { AnonDataContext } from "../../providers/anon-data/anon-data.provider";
 import StripeCheckout from "react-stripe-checkout";
 
 const StripeCheckoutButton = ({
@@ -21,8 +22,10 @@ const StripeCheckoutButton = ({
   cartItems,
   storeOrderStarts,
   clearCart,
-  isChecking
+  isChecking,
+  currentUserAddresses
 }) => {
+  const { anonData, clearAnonData } = useContext(AnonDataContext);
   // stripe need the value of the articles in cents
   const priceForStripe = price * 100;
   // this is the public key we get from stripe dev dashboard
@@ -41,6 +44,8 @@ const StripeCheckoutButton = ({
       .then(response => {
         if (currentUser) {
           storeOrderStarts(cartItems, price);
+        } else {
+          clearAnonData();
         }
         clearCart();
         alert("succesful payment");
@@ -49,6 +54,8 @@ const StripeCheckoutButton = ({
         // REMOVE THIS FOR PRODUCTION
         if (currentUser) {
           storeOrderStarts(cartItems, price);
+        } else {
+          clearAnonData();
         }
         clearCart();
         console.log("Payment Error: ", error);
@@ -63,16 +70,23 @@ const StripeCheckoutButton = ({
       currency="EUR"
       label="Pay Now"
       name="CRWN Clothing Ltd."
-      billingAddress={currentUser ? false : true} // we conditionally pass the property (using true) or not (using false) depending on currentUser value
-      shippingAddress={currentUser ? false : true}
       image="https://svgshare.com/i/CUz.svg"
       description={`Your total is ${price}€`}
       amount={priceForStripe}
       panelLabel="Pay Now"
       token={onToken}
       stripeKey={publishableKey}
-      email={currentUserEmail}
-      disabled={isChecking}
+      email={
+        currentUser
+          ? currentUserEmail
+          : anonData.email !== ""
+          ? anonData.email
+          : undefined
+      }
+      disabled={
+        cartItems.length < 1 ||
+        (anonData.name === "" && currentUserAddresses.length === 0)
+      }
     />
   );
 };
@@ -80,6 +94,7 @@ const StripeCheckoutButton = ({
 const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser,
   currentUserEmail: selectCurrentUserEmail,
+  currentUserAddresses: selectCurrentUserAddreses,
   cartItems: selectCartItems,
   isChecking: selectIsCheckingUser
 });

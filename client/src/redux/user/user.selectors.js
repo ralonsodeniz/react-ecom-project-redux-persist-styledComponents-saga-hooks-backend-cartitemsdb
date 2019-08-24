@@ -24,7 +24,7 @@ export const selectCurrentUserAvatar = createSelector(
 
 export const selectCurrentUserAddreses = createSelector(
   [selectCurrentUser],
-  currentUser => currentUser.addresses
+  currentUser => (currentUser ? currentUser.addresses : [])
 );
 
 export const selectCurrentUserDisplayName = createSelector(
@@ -37,7 +37,7 @@ export const selectCurrentUserEmail = createSelector(
   currentUser => {
     // if there is not user logged in we return false as email so in the stripe component it asks for an email in the payment form
     if (currentUser) return currentUser.email;
-    return false;
+    return undefined;
   }
 );
 

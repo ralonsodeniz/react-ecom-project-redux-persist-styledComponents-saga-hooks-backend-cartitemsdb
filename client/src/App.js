@@ -35,7 +35,9 @@ const ShopPage = lazy(() => import("./pages/shop/shop.component"));
 const SignInAndUpPageContainer = lazy(() =>
   import("./pages/sign-in-and-up/sign-in-and-up.container")
 );
-const CheckoutPage = lazy(() => import("./pages/checkout/checkout.component"));
+const CheckoutPageContainer = lazy(() =>
+  import("./pages/checkout/checkout.container")
+);
 const AccountPageContainer = lazy(() =>
   import("./pages/account/account.container")
 );
@@ -145,7 +147,7 @@ const App = ({ checkUserSessionStart, currentUser, isCheckingUser }) => {
             />
             {/* what we have done here is to conditionally render one of two components depending if currentUser exists or not */}
             {/* <Redirect> router component allow us to change the path of a route to a new one so we can avoid to show sign in page when a user is logged in */}
-            <Route exact path="/checkout" component={CheckoutPage} />
+            <Route exact path="/checkout" component={CheckoutPageContainer} />
             <Route
               path="/account"
               render={() =>

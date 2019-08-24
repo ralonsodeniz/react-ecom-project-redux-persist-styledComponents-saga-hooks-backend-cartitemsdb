@@ -7,6 +7,8 @@ import {
   selectCartItemsTotal
 } from "../../redux/cart/cart.selectors";
 import CheckoutItem from "../../components/checkout-item/checkout-item.component";
+import UserAddressesCheckout from "../../components/user-addresses-checkout/user-addresses-checkout.component";
+import AnonDataProvider from "../../providers/anon-data/anon-data.provider";
 
 import {
   CheckoutPageContainer,
@@ -43,12 +45,15 @@ const CheckoutPage = ({ cartItems, total }) => (
     <TotalContainer>
       <span>TOTAL: {total}€</span>
     </TotalContainer>
+    <AnonDataProvider>
+      <UserAddressesCheckout />
+      <CheckoutStripeButtonContainer price={total} />
+    </AnonDataProvider>
     <FakeCardInfoContainer>
       *For test purposes use the following credict card for payments*
       <br />
       4242 4242 4242 4242 - Exp: 01/20 - CVV: 123
     </FakeCardInfoContainer>
-    <CheckoutStripeButtonContainer price={total} />
   </CheckoutPageContainer>
 );
 

@@ -275,7 +275,6 @@ export const updateDefaultAddressInDB = async addressIndex => {
     let newAddresses = addresses;
     const newDefaultAddress = newAddresses.splice(addressIndex, 1);
     newAddresses.unshift(...newDefaultAddress);
-    console.log(newAddresses);
     await userRef.update({ addresses: newAddresses });
   } catch (error) {
     console.log("failed to update default address");

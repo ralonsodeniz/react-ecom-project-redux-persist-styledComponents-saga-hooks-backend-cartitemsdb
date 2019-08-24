@@ -31,8 +31,8 @@ const UserAddresses = ({
   addNewAddressStart,
   currentUserAddresses,
   removeAddressStart,
-  currentUser,
-  updateDefaultAddressStarts
+  updateDefaultAddressStarts,
+  currentUser
 }) => {
   const [newAddress, setNewAddress] = useState({
     addressName: "",
@@ -112,7 +112,7 @@ const UserAddresses = ({
       </NewDAddressContainer>
       <SavedAddressesContainer>
         <h3>Saved addresses</h3>
-        {currentUserAddresses.length > 0
+        {currentUser.addresses.length > 0 // we have needed to use currentUser since the memoization from currentUserAddress was not being able to see the change on the value and this way we force the rerender to get the new address list
           ? currentUserAddresses.map((address, addressIndex) => (
               <AddressContainer key={addressIndex}>
                 <AddressTitle>
