@@ -35,7 +35,7 @@ export const AddressContainer = styled.div`
 export const AddressTitle = styled.h5`
   display: flex;
   font-size: 18px;
-  width: 100%;
+  width: max-content;
   margin-bottom: 5px;
 `;
 
