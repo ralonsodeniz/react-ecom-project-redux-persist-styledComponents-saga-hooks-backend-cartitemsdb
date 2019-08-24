@@ -181,10 +181,28 @@ export const removeAddressInDB = async address => {
 };
 
 export const updateUserDataInDB = async userCredentials => {
-  const userId = auth.currentUser.uid;
+  const user = auth.currentUser;
+  const userId = user.uid;
   const userRef = firestore.doc(`users/${userId}`);
-  const { displayName, email } = userCredentials;
+  let { displayName, email, password } = userCredentials;
+  const userSnapshot = await userRef.get();
+  const userData = userSnapshot.data();
+  const storedDisplayName = userData.displayName;
+  const storedEmail = userData.email;
+  const credentials = firebase.auth.EmailAuthProvider.credential(
+    user.email,
+    password
+  );
+  await user.reauthenticateWithCredential(credentials);
+  if (displayName === "") {
+    displayName = storedDisplayName;
+  }
+  if (email === "") {
+    email = storedEmail;
+  }
   try {
+    await user.updateProfile({ displayName });
+    await user.updateEmail(email);
     await userRef.update({
       displayName,
       email
@@ -192,6 +210,7 @@ export const updateUserDataInDB = async userCredentials => {
   } catch (error) {
     console.log("failed to update user data", error);
   }
+  return { displayName, email };
 };
 
 export const storeOrderInDB = async ({ order, price }) => {
@@ -278,6 +297,38 @@ export const updateDefaultAddressInDB = async addressIndex => {
     await userRef.update({ addresses: newAddresses });
   } catch (error) {
     console.log("failed to update default address");
+  }
+};
+
+export const updatePasswordInDB = async passwordCredentials => {
+  const user = auth.currentUser;
+  const { newPassword, password } = passwordCredentials;
+  try {
+    const credentials = firebase.auth.EmailAuthProvider.credential(
+      user.email,
+      password
+    );
+    await user.reauthenticateWithCredential(credentials);
+    await user.updatePassword(newPassword);
+  } catch (error) {
+    console.log("failed to update password", error);
+  }
+};
+
+export const deleteUserInDB = async password => {
+  const user = auth.currentUser;
+  const userId = user.uid;
+  try {
+    await firestore.doc(`users/${userId}`).delete();
+    const credentials = firebase.auth.EmailAuthProvider.credential(
+      user.email,
+      password
+    );
+    await user.reauthenticateWithCredential(credentials);
+    await user.delete();
+    await auth.signOut();
+  } catch (error) {
+    console.log("failed to delete user", error);
   }
 };
 

@@ -11,9 +11,14 @@ export const UpdateUserDataTitleContainer = styled.h2`
 `;
 
 export const UpdateUsernameAndPasswordContainer = styled.div`
-  label {
+  input[name="displayName"] + label,
+  input[name="email"] + label {
     top: -14px !important;
     font-size: 12px !important;
     color: ${mainColor} !important;
   }
+`;
+
+export const DeleteUserContainer = styled.div`
+  margin-bottom: 20px;
 `;

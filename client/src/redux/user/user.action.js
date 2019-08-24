@@ -57,7 +57,7 @@ export const signOutFailure = error => ({
 });
 
 // actions to signup using sagas
-export const signUnStart = userCredentials => ({
+export const signUpStart = userCredentials => ({
   type: UserActionTypes.SIGN_UP_START,
   payload: userCredentials
 });
@@ -130,4 +130,14 @@ export const updateDefaultAddressStarts = addressIndex => ({
 export const updateDefaultAddress = addressIndex => ({
   type: UserActionTypes.SELECT_DEFAULT_ADDRESS,
   payload: addressIndex
+});
+
+export const updatePassword = passwordCredentials => ({
+  type: UserActionTypes.UPDATE_PASSWORD,
+  payload: passwordCredentials
+});
+
+export const deleteUser = password => ({
+  type: UserActionTypes.DELETE_USER,
+  payload: password
 });

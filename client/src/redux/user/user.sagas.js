@@ -13,7 +13,9 @@ import {
   removeAddressInDB,
   updateUserDataInDB,
   storeOrderInDB,
-  updateDefaultAddressInDB
+  updateDefaultAddressInDB,
+  updatePasswordInDB,
+  deleteUserInDB
 } from "../../firebase/firebase.utils"; // we need this from firebase utils for our generator function
 import {
   signInSuccess,
@@ -48,7 +50,8 @@ export function* getSnapshotFromUserAuth(userAuth, additionalData) {
       email,
       avatarUrl,
       addresses,
-      orders
+      orders,
+      emailAndPassSignUp
     } = userSnapshot.data();
     yield put(
       // we dispatch the action with the payload we need to update our reducer
@@ -59,7 +62,8 @@ export function* getSnapshotFromUserAuth(userAuth, additionalData) {
         email,
         avatarUrl,
         addresses,
-        orders
+        orders,
+        emailAndPassSignUp
       })
     );
   } catch (error) {
@@ -146,7 +150,7 @@ export function* signOut({ payload }) {
     // and then we update our store to clear the user
     yield put(signOutSuccess());
   } catch (error) {
-    yield put(signOutFailure());
+    yield put(signOutFailure(error));
   }
 }
 
@@ -155,11 +159,18 @@ export function* onSignOutStart() {
 }
 
 // sagas to sign up a new user with email and password
-export function* signUp({ payload: { email, password, displayName } }) {
+export function* signUp({
+  payload: { email, password, displayName, emailAndPassSignUp }
+}) {
   // remember that when we use takeLatest, takeEvery or takeLeading we pass to the saga that is the second parameter of the method the complete action object
   try {
     const { user } = yield auth.createUserWithEmailAndPassword(email, password);
-    yield put(signUpSuccess({ user, additionalData: { displayName } })); // displayName we have to pass it as an object since inside createUserProfileDocument is spreaded and if we pass it like the string it is it will create an array for each letter instead of creating the displayname item
+    yield put(
+      signUpSuccess({
+        user,
+        additionalData: { displayName, emailAndPassSignUp }
+      })
+    ); // displayName we have to pass it as an object since inside createUserProfileDocument is spreaded and if we pass it like the string it is it will create an array for each letter instead of creating the displayname item
   } catch (error) {
     yield put(signUpFailure(error));
   }
@@ -218,8 +229,8 @@ export function* removeAddressDB() {
 
 export function* updateStoredUserDataDB({ payload }) {
   try {
-    yield updateUserDataInDB(payload);
-    yield put(updateUserData(payload));
+    const { displayName, email } = yield updateUserDataInDB(payload);
+    yield put(updateUserData({ displayName, email }));
   } catch (error) {
     console.log("error udpating user data", error);
   }
@@ -262,6 +273,31 @@ export function* updateDefaultAddressDB() {
   );
 }
 
+export function* updateStoredPasswordDB({ payload }) {
+  try {
+    yield updatePasswordInDB(payload);
+  } catch (error) {
+    console.log("error updating password", error);
+  }
+}
+
+export function* updatePasswordDB() {
+  yield takeLatest(UserActionTypes.UPDATE_PASSWORD, updateStoredPasswordDB);
+}
+
+export function* deleteStoredUserDB({ payload }) {
+  try {
+    yield deleteUserInDB(payload);
+    yield put(signOutSuccess());
+  } catch (error) {
+    yield put(signOutFailure(error));
+  }
+}
+
+export function* deleteUserDB() {
+  yield takeLatest(UserActionTypes.DELETE_USER, deleteStoredUserDB);
+}
+
 // this generator function is the root saga creator for users
 export function* userSagas() {
   yield all([
@@ -276,6 +312,8 @@ export function* userSagas() {
     call(removeAddressDB),
     call(updateUserDataDB),
     call(updateOrdersDB),
-    call(updateDefaultAddressDB)
+    call(updateDefaultAddressDB),
+    call(updatePasswordDB),
+    call(deleteUserDB)
   ]);
 }

@@ -51,3 +51,8 @@ export const selectCurrentUserOrder = orderUrlParam =>
     [selectCurrentUserOrders],
     orders => (orders ? orders[orderUrlParam] : null)
   );
+
+export const selectCurrentUserSignUpEmailAndPass = createSelector(
+  [selectCurrentUser],
+  currentUser => (currentUser.emailAndPassSignUp ? true : false)
+);

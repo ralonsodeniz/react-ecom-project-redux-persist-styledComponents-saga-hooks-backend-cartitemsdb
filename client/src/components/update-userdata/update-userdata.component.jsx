@@ -7,49 +7,74 @@ import FormInput from "../form-input/form-input.component";
 
 import {
   selectCurrentUserDisplayName,
-  selectCurrentUserEmail
+  selectCurrentUserEmail,
+  selectCurrentUserSignUpEmailAndPass
 } from "../../redux/user/user.selectors";
-import { updateUserDataStarts } from "../../redux/user/user.action";
+import {
+  updateUserDataStarts,
+  updatePassword,
+  deleteUser
+} from "../../redux/user/user.action";
 
 import {
   UpdateUserDataContainer,
   UpdateUserDataTitleContainer,
-  UpdateUsernameAndPasswordContainer
+  UpdateUsernameAndPasswordContainer,
+  DeleteUserContainer
 } from "./update-userdata.styles";
 
 const UpdateUserdata = ({
   updateUserDataStarts,
   currentUserDisplayName,
-  currentUserEmail
+  currentUserEmail,
+  currentUserSignUpEmailAndPAss,
+  updatePassword,
+  deleteUser
 }) => {
   const [userCredentials, setuserCredentials] = useState({
     displayName: "",
     email: "",
     password: "",
+    newPassword: "",
     confirmPassword: ""
   });
 
-  const { displayName, email, password, confirmPassword } = userCredentials;
+  const {
+    displayName,
+    email,
+    password,
+    newPassword,
+    confirmPassword
+  } = userCredentials;
 
   const handleSubmitData = event => {
     event.preventDefault();
-    updateUserDataStarts({ displayName, email });
+    if (displayName === "" && email === "")
+      return alert("you are updating nothing");
+    updateUserDataStarts({ displayName, email, password });
     setuserCredentials({
       ...userCredentials,
       displayName: "",
-      email: ""
+      email: "",
+      password: ""
     });
+  };
+
+  const handleDeleteUser = event => {
+    event.preventDefault();
+    deleteUser(password);
   };
 
   const handleSubmitPassword = event => {
     event.preventDefault();
-    if (password === confirmPassword) {
+    if (newPassword === confirmPassword) {
+      updatePassword({ newPassword, password });
       setuserCredentials({
         ...userCredentials,
         password: "",
+        newPassword: "",
         confirmPassword: ""
       });
-      alert("yet to be implemented");
     } else {
       alert("passwords do not match");
     }
@@ -65,6 +90,21 @@ const UpdateUserdata = ({
       <UpdateUserDataTitleContainer>
         User information
       </UpdateUserDataTitleContainer>
+      <DeleteUserContainer>
+        <h3>Delete User</h3>
+        <form onSubmit={handleDeleteUser}>
+          <FormInput
+            type="password"
+            name="password"
+            value={password}
+            onChange={handleChange}
+            label="Current Password"
+            required
+            disabled={!currentUserSignUpEmailAndPAss}
+          />
+          <CustomButton type="submit">delete user</CustomButton>
+        </form>
+      </DeleteUserContainer>
       <UpdateUsernameAndPasswordContainer>
         <h3>Update user information</h3>
         <form onSubmit={handleSubmitData}>
@@ -75,7 +115,7 @@ const UpdateUserdata = ({
             onChange={handleChange}
             label="Display Name"
             placeholder={currentUserDisplayName}
-            required
+            disabled={!currentUserSignUpEmailAndPAss}
           />
           <FormInput
             type="email"
@@ -84,42 +124,70 @@ const UpdateUserdata = ({
             onChange={handleChange}
             label="Email"
             placeholder={currentUserEmail}
-            required
+            disabled={!currentUserSignUpEmailAndPAss}
           />
-          <CustomButton type="submit">Update data</CustomButton>
+          <FormInput
+            type="password"
+            name="password"
+            value={password}
+            onChange={handleChange}
+            label="Current Password"
+            required
+            disabled={!currentUserSignUpEmailAndPAss}
+          />
+          <CustomButton type="submit" disabled={!currentUserSignUpEmailAndPAss}>
+            Update data{" "}
+          </CustomButton>
+        </form>
+        <form onSubmit={handleSubmitPassword}>
+          <FormInput
+            type="password"
+            name="newPassword"
+            value={newPassword}
+            onChange={handleChange}
+            label="New Password"
+            required
+            disabled={!currentUserSignUpEmailAndPAss}
+          />
+          <FormInput
+            type="password"
+            name="confirmPassword"
+            value={confirmPassword}
+            onChange={handleChange}
+            label="Confirm Password"
+            required
+            disabled={!currentUserSignUpEmailAndPAss}
+          />
+          <FormInput
+            type="password"
+            name="password"
+            value={password}
+            onChange={handleChange}
+            label="Current Password"
+            required
+            disabled={!currentUserSignUpEmailAndPAss}
+          />
+          <CustomButton type="submit" disabled={!currentUserSignUpEmailAndPAss}>
+            Update password
+          </CustomButton>
         </form>
       </UpdateUsernameAndPasswordContainer>
-      <form onSubmit={handleSubmitPassword}>
-        <FormInput
-          type="password"
-          name="password"
-          value={password}
-          onChange={handleChange}
-          label="Password"
-          required
-        />
-        <FormInput
-          type="password"
-          name="confirmPassword"
-          value={confirmPassword}
-          onChange={handleChange}
-          label="Confirm Password"
-          required
-        />
-        <CustomButton type="submit">Update password</CustomButton>
-      </form>
     </UpdateUserDataContainer>
   );
 };
 
 const mapStateToProps = createStructuredSelector({
   currentUserDisplayName: selectCurrentUserDisplayName,
-  currentUserEmail: selectCurrentUserEmail
+  currentUserEmail: selectCurrentUserEmail,
+  currentUserSignUpEmailAndPAss: selectCurrentUserSignUpEmailAndPass
 });
 
 const mapDispatchToProps = dispatch => ({
   updateUserDataStarts: userCredentials =>
-    dispatch(updateUserDataStarts(userCredentials))
+    dispatch(updateUserDataStarts(userCredentials)),
+  updatePassword: passwordCredentials =>
+    dispatch(updatePassword(passwordCredentials)),
+  deleteUser: password => dispatch(deleteUser(password))
 });
 
 export default connect(

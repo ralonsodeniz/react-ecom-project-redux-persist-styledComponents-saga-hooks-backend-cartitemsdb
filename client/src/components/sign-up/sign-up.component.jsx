@@ -3,21 +3,28 @@ import { connect } from "react-redux";
 
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
-import { signUnStart } from "../../redux/user/user.action";
+import { signUpStart } from "../../redux/user/user.action";
 
 import { SignUpContainer, SignUpTitleContainer } from "./sign-up.styles";
 // import "./sign-up.styles.scss";
 
 // <- CHANGED FROM CLASS COMPONENT TO FUNCTION COMPONENT THAT USES useState HOOK ->
-const SignUp = ({ signUnStart }) => {
+const SignUp = ({ signUpStart }) => {
   const [userCredentials, setuserCredentials] = useState({
     displayName: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    emailAndPassSignUp: true
   });
 
-  const { displayName, email, password, confirmPassword } = userCredentials;
+  const {
+    displayName,
+    email,
+    password,
+    confirmPassword,
+    emailAndPassSignUp
+  } = userCredentials;
 
   const handleSubmit = event => {
     event.preventDefault(); // with this method we prevent the default behaviour of the element to have full control of it
@@ -27,12 +34,13 @@ const SignUp = ({ signUnStart }) => {
       return;
     }
 
-    signUnStart(email, password, displayName);
+    signUpStart(email, password, displayName, emailAndPassSignUp);
     setuserCredentials({
       displayName: "",
       email: "",
       password: "",
-      confirmPassword: ""
+      confirmPassword: "",
+      emailAndPassSignUp: true
     });
 
     // <- WE MOVE THE SIGN UP TO THE USER SAGAS ->
@@ -104,8 +112,8 @@ const SignUp = ({ signUnStart }) => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  signUnStart: (email, password, displayName) =>
-    dispatch(signUnStart({ email, password, displayName }))
+  signUpStart: (email, password, displayName, emailAndPassSignUp) =>
+    dispatch(signUpStart({ email, password, displayName, emailAndPassSignUp }))
 });
 
 export default connect(

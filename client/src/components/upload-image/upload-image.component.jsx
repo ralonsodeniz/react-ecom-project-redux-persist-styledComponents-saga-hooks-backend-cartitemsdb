@@ -108,7 +108,7 @@ const UploadImage = ({
             backgroundColor={"transparent"}
           />
         </AvatarContainer>
-      ) : currentUserAvatar !== undefined ? (
+      ) : currentUserAvatar !== "" ? (
         <ImageContainerBorder>
           <ImageContainer src={currentUserAvatar} alt={"avatar"} />
         </ImageContainerBorder>
