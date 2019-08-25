@@ -5,7 +5,10 @@ import { createStructuredSelector } from "reselect";
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
 
-import { updateDefaultAddressStarts } from "../../redux/user/user.action";
+import {
+  updateDefaultAddressStarts,
+  addNewAddressStart
+} from "../../redux/user/user.action";
 import {
   selectCurrentUserAddreses,
   selectCurrentUser
@@ -28,7 +31,8 @@ import {
 const UserAddressesCheckout = ({
   currentUserAddresses,
   updateDefaultAddressStarts,
-  currentUser
+  currentUser,
+  addNewAddressStart
 }) => {
   const [newData, setNewData] = useState({
     name: "",
@@ -57,15 +61,25 @@ const UserAddressesCheckout = ({
 
   const handleSubmit = event => {
     event.preventDefault();
-    assignNewAnonData(newData);
-    setNewData({
-      name: "",
-      email: "",
-      street: "",
-      postcode: "",
-      city: "",
-      country: ""
-    });
+    if (currentUser) {
+      addNewAddressStart({
+        addressName: name,
+        street,
+        postcode,
+        city,
+        country
+      });
+    } else {
+      assignNewAnonData(newData);
+      setNewData({
+        name: "",
+        email: "",
+        street: "",
+        postcode: "",
+        city: "",
+        country: ""
+      });
+    }
   };
 
   return (
@@ -130,15 +144,16 @@ const UserAddressesCheckout = ({
               label="Name"
               required
             />
-            <FormInput
-              type="email"
-              name="email"
-              value={currentUser ? currentUser.email : email}
-              onChange={handleChange}
-              label="Email"
-              required
-            />
-
+            {!currentUser ? (
+              <FormInput
+                type="email"
+                name="email"
+                value={currentUser ? currentUser.email : email}
+                onChange={handleChange}
+                label="Email"
+                required
+              />
+            ) : null}
             <FormInput
               type="text"
               name="street"
@@ -186,7 +201,8 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = dispatch => ({
   updateDefaultAddressStarts: addressIndex =>
-    dispatch(updateDefaultAddressStarts(addressIndex))
+    dispatch(updateDefaultAddressStarts(addressIndex)),
+  addNewAddressStart: address => dispatch(addNewAddressStart(address))
 });
 
 export default connect(

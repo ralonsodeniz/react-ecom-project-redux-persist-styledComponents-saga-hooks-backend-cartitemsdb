@@ -16,6 +16,18 @@ const config = {
   appId: process.env.REACT_APP_FIREBASE_APPID
 };
 
+let redirectUrl = "";
+if (process.env.NODE_ENV === "development") {
+  redirectUrl = process.env.REACT_APP_LOCALHOST;
+} else {
+  redirectUrl = process.env.REACT_APP_DEPLOY_URL;
+}
+console.log(redirectUrl);
+
+const actionCodeSettings = {
+  url: redirectUrl
+};
+
 export const createUserProfileDocument = async (userAuth, additionalData) => {
   // this is the function we are going to use to crete the users profiles in the db
   if (!userAuth) return; // if there is not user we quit the function
@@ -204,9 +216,6 @@ export const updateUserDataInDB = async userCredentials => {
     }
     if (email !== "" && email !== storedEmail) {
       await user.updateEmail(email);
-      const actionCodeSettings = {
-        url: "http://localhost:3000/signin"
-      };
       await auth.currentUser.sendEmailVerification(actionCodeSettings);
       await userRef.update({ email });
       newEmail = true;
@@ -358,9 +367,6 @@ export const sendNewVerificationEmail = async userCredentials => {
         .map(provider => provider.providerId)
         .includes("password")
     ) {
-      const actionCodeSettings = {
-        url: "http://localhost:3000/signin"
-      };
       await auth.currentUser.sendEmailVerification(actionCodeSettings);
       alert("new verification email has been sent");
     } else {
@@ -374,9 +380,6 @@ export const sendNewVerificationEmail = async userCredentials => {
 
 export const resetPassword = async email => {
   try {
-    const actionCodeSettings = {
-      url: "http://localhost:3000/signin"
-    };
     await auth.sendPasswordResetEmail(email, actionCodeSettings);
     alert("an email with a password reset link has been sent to you");
   } catch (error) {
