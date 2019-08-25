@@ -15,14 +15,17 @@ import {
   storeOrderInDB,
   updateDefaultAddressInDB,
   updatePasswordInDB,
-  deleteUserInDB
+  deleteUserInDB,
+  sendNewVerificationEmail,
+  resetPassword
 } from "../../firebase/firebase.utils"; // we need this from firebase utils for our generator function
 import {
   signInSuccess,
   signInFailure,
+  signOutStart,
   signOutSuccess,
   signOutFailure,
-  signUpSuccess,
+  // signUpSuccess,
   signUpFailure,
   checkUserSessionEnd,
   updateAvatar,
@@ -105,6 +108,18 @@ export function* signInWithEmail({ payload: { emailAndPassword, cartItems } }) {
   try {
     // as we did in sightInWithGoogle we use the corresponding firebase method to get the signIn object and deconstruct the userAuth object from the user property inside of it
     const { user } = yield auth.signInWithEmailAndPassword(email, password);
+    // we check if the email is verified, if not we throw an error to alert the user to verify it
+    if (
+      !user.emailVerified &&
+      // we check if the user was created with email and password
+      user.providerData
+        .map(provider => provider.providerId)
+        .includes("password")
+    ) {
+      alert("Please verify yoru email (add modals to manage this situations)");
+      yield auth.signOut();
+      throw Error("Email needs to be verified");
+    }
     yield call(getSnapshotFromUserAuth, user);
     yield call(CartOnSignIn, user, cartItems);
   } catch (error) {
@@ -165,12 +180,27 @@ export function* signUp({
   // remember that when we use takeLatest, takeEvery or takeLeading we pass to the saga that is the second parameter of the method the complete action object
   try {
     const { user } = yield auth.createUserWithEmailAndPassword(email, password);
-    yield put(
-      signUpSuccess({
-        user,
-        additionalData: { displayName, emailAndPassSignUp }
-      })
-    ); // displayName we have to pass it as an object since inside createUserProfileDocument is spreaded and if we pass it like the string it is it will create an array for each letter instead of creating the displayname item
+    // we creat the settings for the redirect after activating the account
+    const actionCodeSettings = {
+      url: "http://localhost:3000/signin"
+    };
+    // we send the verification email
+    yield auth.currentUser.sendEmailVerification(actionCodeSettings);
+    // we don't want the user to be singed in until the email is verified so we want signin after sing up success
+    // yield put(
+    //   signUpSuccess({
+    //     user,
+    //     additionalData: { displayName, emailAndPassSignUp }
+    //   })
+    // ); // displayName and emailAndPassSignUp we have to pass it as an object since inside createUserProfileDocument is spreaded and if we pass it like the string it is it will create an array for each letter instead of creating the displayname item
+    // instead we create the user in the db and alert the user to verify its email
+    yield call(createUserProfileDocument, user, {
+      displayName,
+      emailAndPassSignUp
+    });
+    alert("Please look in your inbox to verify the email before signing in");
+    // we log out since we logged in when we created the user in the auth
+    yield auth.signOut();
   } catch (error) {
     yield put(signUpFailure(error));
   }
@@ -229,8 +259,10 @@ export function* removeAddressDB() {
 
 export function* updateStoredUserDataDB({ payload }) {
   try {
-    const { displayName, email } = yield updateUserDataInDB(payload);
+    const { cartItems, currentUser } = payload;
+    const { displayName, email, newEmail } = yield updateUserDataInDB(payload);
     yield put(updateUserData({ displayName, email }));
+    if (newEmail) yield put(signOutStart(cartItems, currentUser));
   } catch (error) {
     console.log("error udpating user data", error);
   }
@@ -249,7 +281,7 @@ export function* updateStoredOrdersDB({ payload }) {
     const { order, price } = payload;
     yield put(storeOrder(order, price));
   } catch (error) {
-    console.log("errror updating orders", error);
+    console.log("error updating orders", error);
   }
 }
 
@@ -298,6 +330,33 @@ export function* deleteUserDB() {
   yield takeLatest(UserActionTypes.DELETE_USER, deleteStoredUserDB);
 }
 
+export function* sendVerificationEmail({ payload }) {
+  try {
+    yield sendNewVerificationEmail(payload);
+  } catch (error) {
+    console.log("error sending new verification email", error);
+  }
+}
+
+export function* newVerificationEmail() {
+  yield takeLatest(
+    UserActionTypes.RESEND_VERIFICATION_EMAIL,
+    sendVerificationEmail
+  );
+}
+
+export function* sendNewPassword({ payload }) {
+  try {
+    yield resetPassword(payload);
+  } catch (error) {
+    console.log("error reseting password", error);
+  }
+}
+
+export function* resetUserPassword() {
+  yield takeLatest(UserActionTypes.RESET_PASSWORD, sendNewPassword);
+}
+
 // this generator function is the root saga creator for users
 export function* userSagas() {
   yield all([
@@ -314,6 +373,8 @@ export function* userSagas() {
     call(updateOrdersDB),
     call(updateDefaultAddressDB),
     call(updatePasswordDB),
-    call(deleteUserDB)
+    call(deleteUserDB),
+    call(newVerificationEmail),
+    call(resetUserPassword)
   ]);
 }

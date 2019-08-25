@@ -21,4 +21,7 @@ export const UpdateUsernameAndPasswordContainer = styled.div`
 
 export const DeleteUserContainer = styled.div`
   margin-bottom: 20px;
+  display: grid;
+  justify-content: stretch;
+  width: 234px;
 `;

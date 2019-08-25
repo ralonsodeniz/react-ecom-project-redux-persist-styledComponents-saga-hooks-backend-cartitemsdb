@@ -8,8 +8,10 @@ import FormInput from "../form-input/form-input.component";
 import {
   selectCurrentUserDisplayName,
   selectCurrentUserEmail,
-  selectCurrentUserSignUpEmailAndPass
+  selectCurrentUserSignUpEmailAndPass,
+  selectCurrentUser
 } from "../../redux/user/user.selectors";
+import { selectCartItems } from "../../redux/cart/cart.selectors.js";
 import {
   updateUserDataStarts,
   updatePassword,
@@ -29,7 +31,9 @@ const UpdateUserdata = ({
   currentUserEmail,
   currentUserSignUpEmailAndPAss,
   updatePassword,
-  deleteUser
+  deleteUser,
+  currentUser,
+  cartItems
 }) => {
   const [userCredentials, setuserCredentials] = useState({
     displayName: "",
@@ -51,7 +55,13 @@ const UpdateUserdata = ({
     event.preventDefault();
     if (displayName === "" && email === "")
       return alert("you are updating nothing");
-    updateUserDataStarts({ displayName, email, password });
+    updateUserDataStarts({
+      displayName,
+      email,
+      password,
+      currentUser,
+      cartItems
+    });
     setuserCredentials({
       ...userCredentials,
       displayName: "",
@@ -62,7 +72,7 @@ const UpdateUserdata = ({
 
   const handleDeleteUser = event => {
     event.preventDefault();
-    deleteUser(password);
+    deleteUser({ password, currentUserSignUpEmailAndPAss });
   };
 
   const handleSubmitPassword = event => {
@@ -91,87 +101,97 @@ const UpdateUserdata = ({
         User information
       </UpdateUserDataTitleContainer>
       <DeleteUserContainer>
-        <h3>Delete User</h3>
+        <h3>Delete user</h3>
         <form onSubmit={handleDeleteUser}>
-          <FormInput
-            type="password"
-            name="password"
-            value={password}
-            onChange={handleChange}
-            label="Current Password"
-            required
-            disabled={!currentUserSignUpEmailAndPAss}
-          />
+          {currentUserSignUpEmailAndPAss ? (
+            <FormInput
+              type="password"
+              name="password"
+              value={password}
+              onChange={handleChange}
+              label="Current Password"
+              required
+              disabled={!currentUserSignUpEmailAndPAss}
+            />
+          ) : null}
           <CustomButton type="submit">delete user</CustomButton>
         </form>
       </DeleteUserContainer>
-      <UpdateUsernameAndPasswordContainer>
-        <h3>Update user information</h3>
-        <form onSubmit={handleSubmitData}>
-          <FormInput
-            type="text"
-            name="displayName"
-            value={displayName}
-            onChange={handleChange}
-            label="Display Name"
-            placeholder={currentUserDisplayName}
-            disabled={!currentUserSignUpEmailAndPAss}
-          />
-          <FormInput
-            type="email"
-            name="email"
-            value={email}
-            onChange={handleChange}
-            label="Email"
-            placeholder={currentUserEmail}
-            disabled={!currentUserSignUpEmailAndPAss}
-          />
-          <FormInput
-            type="password"
-            name="password"
-            value={password}
-            onChange={handleChange}
-            label="Current Password"
-            required
-            disabled={!currentUserSignUpEmailAndPAss}
-          />
-          <CustomButton type="submit" disabled={!currentUserSignUpEmailAndPAss}>
-            Update data{" "}
-          </CustomButton>
-        </form>
-        <form onSubmit={handleSubmitPassword}>
-          <FormInput
-            type="password"
-            name="newPassword"
-            value={newPassword}
-            onChange={handleChange}
-            label="New Password"
-            required
-            disabled={!currentUserSignUpEmailAndPAss}
-          />
-          <FormInput
-            type="password"
-            name="confirmPassword"
-            value={confirmPassword}
-            onChange={handleChange}
-            label="Confirm Password"
-            required
-            disabled={!currentUserSignUpEmailAndPAss}
-          />
-          <FormInput
-            type="password"
-            name="password"
-            value={password}
-            onChange={handleChange}
-            label="Current Password"
-            required
-            disabled={!currentUserSignUpEmailAndPAss}
-          />
-          <CustomButton type="submit" disabled={!currentUserSignUpEmailAndPAss}>
-            Update password
-          </CustomButton>
-        </form>
-      </UpdateUsernameAndPasswordContainer>
+      {currentUserSignUpEmailAndPAss ? (
+        <UpdateUsernameAndPasswordContainer>
+          <h3>Update user information</h3>
+          <form onSubmit={handleSubmitData}>
+            <FormInput
+              type="text"
+              name="displayName"
+              value={displayName}
+              onChange={handleChange}
+              label="Display Name"
+              placeholder={currentUserDisplayName}
+              disabled={!currentUserSignUpEmailAndPAss}
+            />
+            <FormInput
+              type="email"
+              name="email"
+              value={email}
+              onChange={handleChange}
+              label="Email"
+              placeholder={currentUserEmail}
+              disabled={!currentUserSignUpEmailAndPAss}
+            />
+            <FormInput
+              type="password"
+              name="password"
+              value={password}
+              onChange={handleChange}
+              label="Current Password"
+              required
+              disabled={!currentUserSignUpEmailAndPAss}
+            />
+            <CustomButton
+              type="submit"
+              disabled={!currentUserSignUpEmailAndPAss}
+            >
+              Update data{" "}
+            </CustomButton>
+          </form>
+          <form onSubmit={handleSubmitPassword}>
+            <FormInput
+              type="password"
+              name="newPassword"
+              value={newPassword}
+              onChange={handleChange}
+              label="New Password"
+              required
+              disabled={!currentUserSignUpEmailAndPAss}
+            />
+            <FormInput
+              type="password"
+              name="confirmPassword"
+              value={confirmPassword}
+              onChange={handleChange}
+              label="Confirm Password"
+              required
+              disabled={!currentUserSignUpEmailAndPAss}
+            />
+            <FormInput
+              type="password"
+              name="password"
+              value={password}
+              onChange={handleChange}
+              label="Current Password"
+              required
+              disabled={!currentUserSignUpEmailAndPAss}
+            />
+            <CustomButton
+              type="submit"
+              disabled={!currentUserSignUpEmailAndPAss}
+            >
+              Update password
+            </CustomButton>
+          </form>
+        </UpdateUsernameAndPasswordContainer>
+      ) : null}
     </UpdateUserDataContainer>
   );
 };
@@ -179,7 +199,9 @@ const UpdateUserdata = ({
 const mapStateToProps = createStructuredSelector({
   currentUserDisplayName: selectCurrentUserDisplayName,
   currentUserEmail: selectCurrentUserEmail,
-  currentUserSignUpEmailAndPAss: selectCurrentUserSignUpEmailAndPass
+  currentUserSignUpEmailAndPAss: selectCurrentUserSignUpEmailAndPass,
+  currentUser: selectCurrentUser,
+  cartItems: selectCartItems
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -187,7 +209,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(updateUserDataStarts(userCredentials)),
   updatePassword: passwordCredentials =>
     dispatch(updatePassword(passwordCredentials)),
-  deleteUser: password => dispatch(deleteUser(password))
+  deleteUser: deleteCredentials => dispatch(deleteUser(deleteCredentials))
 });
 
 export default connect(

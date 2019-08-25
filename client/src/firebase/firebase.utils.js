@@ -184,33 +184,41 @@ export const updateUserDataInDB = async userCredentials => {
   const user = auth.currentUser;
   const userId = user.uid;
   const userRef = firestore.doc(`users/${userId}`);
-  let { displayName, email, password } = userCredentials;
   const userSnapshot = await userRef.get();
   const userData = userSnapshot.data();
   const storedDisplayName = userData.displayName;
   const storedEmail = userData.email;
-  const credentials = firebase.auth.EmailAuthProvider.credential(
-    user.email,
-    password
-  );
-  await user.reauthenticateWithCredential(credentials);
-  if (displayName === "") {
-    displayName = storedDisplayName;
-  }
-  if (email === "") {
-    email = storedEmail;
-  }
+  let { displayName, email, password } = userCredentials;
+  let newEmail = false;
   try {
-    await user.updateProfile({ displayName });
-    await user.updateEmail(email);
-    await userRef.update({
-      displayName,
-      email
-    });
+    const credentials = firebase.auth.EmailAuthProvider.credential(
+      user.email,
+      password
+    );
+    await user.reauthenticateWithCredential(credentials);
+    if (displayName !== "" && displayName !== storedDisplayName) {
+      await user.updateProfile({ displayName }); // here we pass an object because we have different properties inside user profile
+      await userRef.update({ displayName });
+    } else {
+      displayName = storedDisplayName;
+    }
+    if (email !== "" && email !== storedEmail) {
+      await user.updateEmail(email);
+      const actionCodeSettings = {
+        url: "http://localhost:3000/signin"
+      };
+      await auth.currentUser.sendEmailVerification(actionCodeSettings);
+      await userRef.update({ email });
+      newEmail = true;
+      alert("new verification email has been sent");
+    } else {
+      email = storedEmail;
+    }
   } catch (error) {
     console.log("failed to update user data", error);
+    throw Error(error);
   }
-  return { displayName, email };
+  return { displayName, email, newEmail };
 };
 
 export const storeOrderInDB = async ({ order, price }) => {
@@ -315,20 +323,64 @@ export const updatePasswordInDB = async passwordCredentials => {
   }
 };
 
-export const deleteUserInDB = async password => {
+export const deleteUserInDB = async deleteCredentials => {
+  const { currentUserSignUpEmailAndPAss } = deleteCredentials;
   const user = auth.currentUser;
   const userId = user.uid;
   try {
+    if (currentUserSignUpEmailAndPAss) {
+      const { password } = deleteCredentials;
+      const credentials = firebase.auth.EmailAuthProvider.credential(
+        user.email,
+        password
+      );
+      await user.reauthenticateWithCredential(credentials);
+    } else {
+      await user.reauthenticateWithPopup(googleProvider);
+    }
     await firestore.doc(`users/${userId}`).delete();
-    const credentials = firebase.auth.EmailAuthProvider.credential(
-      user.email,
-      password
-    );
-    await user.reauthenticateWithCredential(credentials);
     await user.delete();
     await auth.signOut();
   } catch (error) {
     console.log("failed to delete user", error);
+    throw Error(error.message);
+  }
+};
+
+export const sendNewVerificationEmail = async userCredentials => {
+  const { email, password } = userCredentials;
+  try {
+    const { user } = await auth.signInWithEmailAndPassword(email, password);
+    if (
+      !user.emailVerified &&
+      // we check if the user was created with email and password
+      user.providerData
+        .map(provider => provider.providerId)
+        .includes("password")
+    ) {
+      const actionCodeSettings = {
+        url: "http://localhost:3000/signin"
+      };
+      await auth.currentUser.sendEmailVerification(actionCodeSettings);
+      alert("new verification email has been sent");
+    } else {
+      alert("user email is already verified");
+    }
+  } catch (error) {
+    console.log("failed to send a new verification email", error);
+  }
+  await auth.signOut();
+};
+
+export const resetPassword = async email => {
+  try {
+    const actionCodeSettings = {
+      url: "http://localhost:3000/signin"
+    };
+    await auth.sendPasswordResetEmail(email, actionCodeSettings);
+    alert("an email with a password reset link has been sent to you");
+  } catch (error) {
+    console.log("failed to send the password reset email");
   }
 };
 

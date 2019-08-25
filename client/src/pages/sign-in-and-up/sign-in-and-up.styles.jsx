@@ -16,3 +16,22 @@ export const SignInAndUpContainer = styled.div`
     }
   }
 `;
+
+export const SigInContainer = styled.div`
+  flex-direction: column;
+  align-items: center;
+`;
+
+export const OptionTextContainer = styled.div`
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+`;
+
+export const OptionText = styled.span`
+  cursor: pointer;
+
+  &:hover {
+    color: #4285f4;
+  }
+`;

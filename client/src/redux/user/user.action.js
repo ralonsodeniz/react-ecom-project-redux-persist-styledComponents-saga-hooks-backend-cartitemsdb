@@ -137,7 +137,17 @@ export const updatePassword = passwordCredentials => ({
   payload: passwordCredentials
 });
 
-export const deleteUser = password => ({
+export const deleteUser = deleteCredentials => ({
   type: UserActionTypes.DELETE_USER,
-  payload: password
+  payload: deleteCredentials
+});
+
+export const sendVerificationEmail = userCredentials => ({
+  type: UserActionTypes.RESEND_VERIFICATION_EMAIL,
+  payload: userCredentials
+});
+
+export const resetUserPassword = email => ({
+  type: UserActionTypes.RESET_PASSWORD,
+  payload: email
 });
