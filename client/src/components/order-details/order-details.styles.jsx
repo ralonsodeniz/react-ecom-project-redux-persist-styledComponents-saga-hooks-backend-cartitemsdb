@@ -48,6 +48,15 @@ export const DateAndAddressContainer = styled.div`
   margin-bottom: 30px;
 `;
 
+export const AddressesContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+export const AddressContainer = styled.div`
+  margin-left: 10px;
+`;
+
 export const BackToAccountButton = styled(CustomButton)`
   width: max-content;
   height: min-content;

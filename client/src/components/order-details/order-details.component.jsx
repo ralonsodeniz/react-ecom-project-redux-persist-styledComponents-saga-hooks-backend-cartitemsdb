@@ -11,7 +11,9 @@ import {
   TotalContainer,
   OrderTitleContainer,
   DateAndAddressContainer,
-  BackToAccountButton
+  BackToAccountButton,
+  AddressContainer,
+  AddressesContainer
 } from "./order-details.styles";
 
 const OrderDetails = ({ order, match, history }) => (
@@ -28,14 +30,25 @@ const OrderDetails = ({ order, match, history }) => (
         <strong>Year:</strong> {order.date.year} <br />
         <strong>Month:</strong> {order.date.month} <br />
         <strong>Day:</strong> {order.date.day} <br />
-        <strong>Time:</strong> {order.date.hour}:{order.date.minutes}
+        <strong>Time:</strong> {order.date.hour}:
+        {order.date.minutes > 10
+          ? order.date.minutes
+          : `0${order.date.minutes}`}
       </div>
-      <div>
-        <h3>Order address</h3>
-        <strong>{order.address.addressName}</strong> <br />
-        {order.address.street} - {order.address.postcode} <br />
-        {order.address.city} - {order.address.country} <br />
-      </div>
+      <AddressesContainer>
+        <AddressContainer>
+          <h3>Order address</h3>
+          <strong>{order.address.addressName}</strong> <br />
+          {order.address.street} - {order.address.postcode} <br />
+          {order.address.city} - {order.address.country} <br />
+        </AddressContainer>
+        <AddressContainer>
+          <h3>Billing address</h3>
+          <strong>{order.billingAddress.addressName}</strong> <br />
+          {order.billingAddress.street} - {order.billingAddress.postcode} <br />
+          {order.billingAddress.city} - {order.billingAddress.country} <br />
+        </AddressContainer>
+      </AddressesContainer>
     </DateAndAddressContainer>
     <OrderDetailsHeaderContainer>
       <HeaderBlockContainer>

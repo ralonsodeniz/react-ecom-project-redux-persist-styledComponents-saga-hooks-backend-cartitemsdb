@@ -26,7 +26,15 @@ const CheckoutItem = ({ cartItem, clearItemFromCart, addItem, removeItem }) => {
       </ImageContainer>
       <TextContainer>{name}</TextContainer>
       <QuantityContainer>
-        <div onClick={() => removeItem(cartItem)}>&#10094;</div>
+        <div
+          onClick={() => {
+            if (quantity > 1) {
+              removeItem(cartItem);
+            }
+          }}
+        >
+          &#10094;
+        </div>
         <span>{quantity}</span>
         <div onClick={() => addItem(cartItem)}>&#10095;</div>
       </QuantityContainer>

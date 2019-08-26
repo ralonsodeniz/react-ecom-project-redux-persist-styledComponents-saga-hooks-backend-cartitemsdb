@@ -27,6 +27,10 @@ const UserOrders = ({ orders, history, match }) => {
                 >
                   {`Order date : ${value.date.year}, ${value.date.month} ${
                     value.date.day
+                  } - ${value.date.hour}:${
+                    value.date.minutes > 10
+                      ? value.date.minutes
+                      : `0${value.date.minutes}`
                   }`}
                 </OrderTitle>
                 Items : {value.items.length} <br />

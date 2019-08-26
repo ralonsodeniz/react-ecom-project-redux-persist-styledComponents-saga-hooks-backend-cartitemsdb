@@ -13,7 +13,6 @@ const OnClickOutside = ({ children, action, enabled }) => {
 
   useEffect(() => {
     if (enabled) {
-      console.log("triggered");
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("touchstart", handleClickOutside);
       return () => {

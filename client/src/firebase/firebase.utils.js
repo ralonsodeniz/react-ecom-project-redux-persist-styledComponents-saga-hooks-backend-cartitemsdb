@@ -22,7 +22,6 @@ if (process.env.NODE_ENV === "development") {
 } else {
   redirectUrl = process.env.REACT_APP_DEPLOY_URL;
 }
-console.log(redirectUrl);
 
 const actionCodeSettings = {
   url: redirectUrl
@@ -230,7 +229,7 @@ export const updateUserDataInDB = async userCredentials => {
   return { displayName, email, newEmail };
 };
 
-export const storeOrderInDB = async ({ order, price }) => {
+export const storeOrderInDB = async ({ order, price, billingAddress }) => {
   const userId = auth.currentUser.uid;
   const userRef = firestore.doc(`users/${userId}`);
   const userSnapshot = await userRef.get();
@@ -294,11 +293,14 @@ export const storeOrderInDB = async ({ order, price }) => {
       },
       items: order,
       total: price,
-      address: addresses[0]
+      address: addresses[0],
+      billingAddress
     };
     await userRef.update({ orders: newOrders });
+    return newOrders;
   } catch (error) {
     console.log("filed to update orders", error);
+    throw Error(error);
   }
 };
 
