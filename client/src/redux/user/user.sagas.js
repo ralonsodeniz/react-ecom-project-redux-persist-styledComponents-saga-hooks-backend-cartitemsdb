@@ -17,7 +17,8 @@ import {
   updatePasswordInDB,
   deleteUserInDB,
   sendNewVerificationEmail,
-  resetPassword
+  resetPassword,
+  actionCodeSettings
 } from "../../firebase/firebase.utils"; // we need this from firebase utils for our generator function
 import {
   signInSuccess,
@@ -192,9 +193,6 @@ export function* signUp({
   try {
     const { user } = yield auth.createUserWithEmailAndPassword(email, password);
     // we creat the settings for the redirect after activating the account
-    const actionCodeSettings = {
-      url: "http://localhost:3000/signin"
-    };
     // we send the verification email
     yield auth.currentUser.sendEmailVerification(actionCodeSettings);
     // we don't want the user to be singed in until the email is verified so we want signin after sing up success

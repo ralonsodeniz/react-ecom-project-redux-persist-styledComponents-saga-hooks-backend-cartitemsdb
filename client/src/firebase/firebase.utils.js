@@ -23,9 +23,7 @@ if (process.env.NODE_ENV === "development") {
   redirectUrl = process.env.REACT_APP_DEPLOY_URL;
 }
 
-console.log(redirectUrl);
-
-const actionCodeSettings = {
+export const actionCodeSettings = {
   url: redirectUrl
 };
 
