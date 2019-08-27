@@ -67,19 +67,19 @@ const StripeCheckoutButton = ({
         stripeEmail: token.email,
         stripeToken: token.id,
         stripeTokenType: token.type,
-        stripeBillingName: addresses.billing_name || currentUserAddresses[0].addressName, 
-        stripeBillingAddressLine1: addresses.billing_address_line1 || currentUserAddresses[0].street,
-        stripeBillingAddressZip: addresses.billing_address_zip || currentUserAddresses[0].postcode,
+        stripeBillingName: addresses.billing_name || currentUser ? currentUserAddresses[0].addressName : anonData.name, 
+        stripeBillingAddressLine1: addresses.billing_address_line1 || currentUser ? currentUserAddresses[0].street : anonData.street,
+        stripeBillingAddressZip: addresses.billing_address_zip || currentUser ? currentUserAddresses[0].postcode: anonData.postcode,
         stripeBillingAddressState: addresses.billing_address_state || "",
-        stripeBillingAddressCity: addresses.billing_address_city || currentUserAddresses[0].city,
-        stripeBillingAddressCountry: addresses.billing_address_country || currentUserAddresses[0].country,
+        stripeBillingAddressCity: addresses.billing_address_city || currentUser ? currentUserAddresses[0].city : anonData.city,
+        stripeBillingAddressCountry: addresses.billing_address_country || currentUser ? currentUserAddresses[0].country : anonData.country,
         stripeBillingAddressCountryCode: addresses.billing_address_country_code || "",
-        stripeShippingName: addresses.shipping_name || currentUserAddresses[0].addressName, 
-        stripeShippingAddressLine1: addresses.shipping_address_line1 || currentUserAddresses[0].street,
-        stripeShippingAddressZip: addresses.shipping_address_zip || currentUserAddresses[0].postcode,
+        stripeShippingName: addresses.shipping_name || currentUser ? currentUserAddresses[0].addressName : anonData.name, 
+        stripeShippingAddressLine1: addresses.shipping_address_line1 || currentUser ? currentUserAddresses[0].street : anonData.street,
+        stripeShippingAddressZip: addresses.shipping_address_zip || currentUser ? currentUserAddresses[0].postcode: anonData.postcode,
         stripeShippingAddressState: addresses.shipping_address_state || "",
-        stripeShippingAddressCity: addresses.shipping_address_city || currentUserAddresses[0].city,
-        stripeShippingAddressCountry: addresses.shipping_address_country || currentUserAddresses[0].country,
+        stripeShippingAddressCity: addresses.shipping_address_city || currentUser ? currentUserAddresses[0].city : anonData.city,
+        stripeShippingAddressCountry: addresses.shipping_address_country || currentUser ? currentUserAddresses[0].country : anonData.country,
         stripeShippingAddressCountryCode: addresses.shipping_address_country_code || "",
 
       }
@@ -145,6 +145,7 @@ const StripeCheckoutButton = ({
   };
 
   return (
+    console.log(anonData),
     <StripeButtonContainer>
       <OptionText onClick={handleBilling}>
         Different billing address{" "}
