@@ -4,12 +4,13 @@ import { connect } from "react-redux";
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
 import { signUpStart } from "../../redux/user/user.action";
+import { openModal } from "../../redux/account/account.actions";
 
 import { SignUpContainer, SignUpTitleContainer } from "./sign-up.styles";
 // import "./sign-up.styles.scss";
 
 // <- CHANGED FROM CLASS COMPONENT TO FUNCTION COMPONENT THAT USES useState HOOK ->
-const SignUp = ({ signUpStart }) => {
+const SignUp = ({ signUpStart, openModal }) => {
   const [userCredentials, setuserCredentials] = useState({
     displayName: "",
     email: "",
@@ -30,7 +31,7 @@ const SignUp = ({ signUpStart }) => {
     event.preventDefault(); // with this method we prevent the default behaviour of the element to have full control of it
     // next step is to mimic what we did in App.js when the google auth happens
     if (password !== confirmPassword) {
-      alert("passwords do not match");
+      openModal("Passwords do not match");
       return;
     }
 
@@ -113,7 +114,8 @@ const SignUp = ({ signUpStart }) => {
 
 const mapDispatchToProps = dispatch => ({
   signUpStart: (email, password, displayName, emailAndPassSignUp) =>
-    dispatch(signUpStart({ email, password, displayName, emailAndPassSignUp }))
+    dispatch(signUpStart({ email, password, displayName, emailAndPassSignUp })),
+  openModal: text => dispatch(openModal(text))
 });
 
 export default connect(

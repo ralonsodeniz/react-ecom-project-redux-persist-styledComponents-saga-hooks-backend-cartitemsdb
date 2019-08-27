@@ -18,6 +18,8 @@ import {
   deleteUser
 } from "../../redux/user/user.action";
 
+import { openModal } from "../../redux/account/account.actions";
+
 import {
   UpdateUserDataContainer,
   UpdateUserDataTitleContainer,
@@ -33,7 +35,8 @@ const UpdateUserdata = ({
   updatePassword,
   deleteUser,
   currentUser,
-  cartItems
+  cartItems,
+  openModal
 }) => {
   const [userCredentials, setuserCredentials] = useState({
     displayName: "",
@@ -54,7 +57,7 @@ const UpdateUserdata = ({
   const handleSubmitData = event => {
     event.preventDefault();
     if (displayName === "" && email === "")
-      return alert("you are updating nothing");
+      return openModal("You are trying to update nothing");
     updateUserDataStarts({
       displayName,
       email,
@@ -86,7 +89,7 @@ const UpdateUserdata = ({
         confirmPassword: ""
       });
     } else {
-      alert("passwords do not match");
+      openModal("Passwords do not match");
     }
   };
 
@@ -209,7 +212,8 @@ const mapDispatchToProps = dispatch => ({
     dispatch(updateUserDataStarts(userCredentials)),
   updatePassword: passwordCredentials =>
     dispatch(updatePassword(passwordCredentials)),
-  deleteUser: deleteCredentials => dispatch(deleteUser(deleteCredentials))
+  deleteUser: deleteCredentials => dispatch(deleteUser(deleteCredentials)),
+  openModal: text => dispatch(openModal(text))
 });
 
 export default connect(

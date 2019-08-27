@@ -3,7 +3,9 @@ import UserActionTypes from "../user/user.types";
 
 const INITIAL_STATE = {
   accountHidden: true,
-  avatarLoading: false
+  avatarLoading: false,
+  modalHidden: true,
+  modalText: ""
 };
 
 const accountReducer = (state = INITIAL_STATE, action) => {
@@ -22,6 +24,18 @@ const accountReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         avatarLoading: false
+      };
+    case AccountActionTypes.OPPEN_MODAL:
+      return {
+        ...state,
+        modalHidden: false,
+        modalText: action.payload
+      };
+    case AccountActionTypes.CLOSE_MODAL:
+      return {
+        ...state,
+        modalHidden: true,
+        modalText: ""
       };
     default:
       return state;

@@ -55,7 +55,8 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
         orders
       });
     } catch (error) {
-      console.log("error creating user", error.message);
+      console.log("error creating user", error);
+      throw Error("Ooops something happened while creating the user");
     }
   }
   return userRef; // we may want to use this user reference after
@@ -121,13 +122,18 @@ export const convertCollectionsSnapshotToMap = collections => {
 // we will use onAuthStateChange to check if there is a user logged in and if so to get it and just after that we close the observable listener
 // we need it in a Promise pattern since our sagas need the promise to yield
 export const getCurrentUser = () => {
-  return new Promise((resolve, reject) => {
-    const unsubscribe = auth.onAuthStateChanged(userAuth => {
-      // onAuthStateChanged or onSnapshot take a succeed and an optional on error
-      unsubscribe(); // we close the listener with the method returned from onAuthStateChanged
-      resolve(userAuth); // if we have an user logged in we get the userAuth and we return it, if there is not user logged we will return null as the userAuth will be empty
-    }, reject); // if there is any errro we use reject as the second parameter of onAtuhStateChanged so we can catch it with our saga
-  });
+  try {
+    return new Promise((resolve, reject) => {
+      const unsubscribe = auth.onAuthStateChanged(userAuth => {
+        // onAuthStateChanged or onSnapshot take a succeed and an optional on error
+        unsubscribe(); // we close the listener with the method returned from onAuthStateChanged
+        resolve(userAuth); // if we have an user logged in we get the userAuth and we return it, if there is not user logged we will return null as the userAuth will be empty
+      }, reject); // if there is any errro we use reject as the second parameter of onAtuhStateChanged so we can catch it with our saga
+    });
+  } catch (error) {
+    console.log("error checking if there is an user authenticated", error);
+    throw Error("Ooops something happened while checking users");
+  }
 };
 
 export const storeCartItems = async (cartItems, userId) => {
@@ -136,6 +142,7 @@ export const storeCartItems = async (cartItems, userId) => {
     await userRef.update({ cartItems: cartItems });
   } catch (error) {
     console.log(error, "error updating cart");
+    throw Error("Ooops something happened while storing your cart");
   }
 };
 
@@ -143,11 +150,16 @@ export const updateCartOnSignIn = async (userAuth, currentCartItems) => {
   const userRef = firestore.doc(`users/${userAuth.uid}`);
   const userSnapshot = await userRef.get();
   let { cartItems } = userSnapshot.data();
-  if (cartItems === undefined) {
-    cartItems = [];
+  try {
+    if (cartItems === undefined) {
+      cartItems = [];
+    }
+    const mergedCart = mergeCarts(cartItems, currentCartItems);
+    return mergedCart;
+  } catch (error) {
+    console.log("error while updating cart on sign in", error);
+    throw Error("Ooops something happened while updating your cart");
   }
-  const mergedCart = mergeCarts(cartItems, currentCartItems);
-  return mergedCart;
 };
 
 export const updateAvatarInDB = async url => {
@@ -157,6 +169,7 @@ export const updateAvatarInDB = async url => {
     await userRef.update({ avatarUrl: url });
   } catch (error) {
     console.log(error, "error updating avatar url");
+    throw Error("Ooops something happened while updating your avatar");
   }
 };
 
@@ -173,6 +186,7 @@ export const addNewAddressInDB = async address => {
     await userRef.update({ addresses: newAdresses });
   } catch (error) {
     console.log("failed to add new address", error);
+    throw Error("Ooops something happened while adding your new address");
   }
 };
 
@@ -188,6 +202,7 @@ export const removeAddressInDB = async address => {
     await userRef.update({ addresses: newAdresses });
   } catch (error) {
     console.log("failed to remove address", error);
+    throw Error("Ooops something happened while removing your address");
   }
 };
 
@@ -201,6 +216,7 @@ export const updateUserDataInDB = async userCredentials => {
   const storedEmail = userData.email;
   let { displayName, email, password } = userCredentials;
   let newEmail = false;
+  let newDisplayName = false;
   try {
     const credentials = firebase.auth.EmailAuthProvider.credential(
       user.email,
@@ -210,6 +226,7 @@ export const updateUserDataInDB = async userCredentials => {
     if (displayName !== "" && displayName !== storedDisplayName) {
       await user.updateProfile({ displayName }); // here we pass an object because we have different properties inside user profile
       await userRef.update({ displayName });
+      newDisplayName = true;
     } else {
       displayName = storedDisplayName;
     }
@@ -218,15 +235,14 @@ export const updateUserDataInDB = async userCredentials => {
       await auth.currentUser.sendEmailVerification(actionCodeSettings);
       await userRef.update({ email });
       newEmail = true;
-      alert("new verification email has been sent");
     } else {
       email = storedEmail;
     }
   } catch (error) {
     console.log("failed to update user data", error);
-    throw Error(error);
+    throw Error("Ooops something happened while updating your data");
   }
-  return { displayName, email, newEmail };
+  return { displayName, email, newDisplayName, newEmail };
 };
 
 export const storeOrderInDB = async ({ order, price, billingAddress }) => {
@@ -300,7 +316,7 @@ export const storeOrderInDB = async ({ order, price, billingAddress }) => {
     return newOrders;
   } catch (error) {
     console.log("filed to update orders", error);
-    throw Error(error);
+    throw Error("Ooops something happened while storing your order");
   }
 };
 
@@ -316,6 +332,7 @@ export const updateDefaultAddressInDB = async addressIndex => {
     await userRef.update({ addresses: newAddresses });
   } catch (error) {
     console.log("failed to update default address");
+    throw Error("Ooops something happened while changing your default address");
   }
 };
 
@@ -331,6 +348,7 @@ export const updatePasswordInDB = async passwordCredentials => {
     await user.updatePassword(newPassword);
   } catch (error) {
     console.log("failed to update password", error);
+    throw Error("Ooops something happened while changing your password");
   }
 };
 
@@ -354,12 +372,13 @@ export const deleteUserInDB = async deleteCredentials => {
     await auth.signOut();
   } catch (error) {
     console.log("failed to delete user", error);
-    throw Error(error.message);
+    throw Error("Ooops something happened while deleting your user");
   }
 };
 
 export const sendNewVerificationEmail = async userCredentials => {
   const { email, password } = userCredentials;
+  let alreadyVerified = false;
   try {
     const { user } = await auth.signInWithEmailAndPassword(email, password);
     if (
@@ -370,22 +389,29 @@ export const sendNewVerificationEmail = async userCredentials => {
         .includes("password")
     ) {
       await auth.currentUser.sendEmailVerification(actionCodeSettings);
-      alert("new verification email has been sent");
     } else {
-      alert("user email is already verified");
+      alreadyVerified = true;
     }
   } catch (error) {
     console.log("failed to send a new verification email", error);
+    throw Error(
+      error.message ||
+        "Ooops something happened while trying to send you a new verification email"
+    );
   }
   await auth.signOut();
+  return alreadyVerified;
 };
 
 export const resetPassword = async email => {
   try {
     await auth.sendPasswordResetEmail(email, actionCodeSettings);
-    alert("an email with a password reset link has been sent to you");
   } catch (error) {
     console.log("failed to send the password reset email");
+    throw Error(
+      error.message ||
+        "Ooops something happened while trying to reset your password"
+    );
   }
 };
 

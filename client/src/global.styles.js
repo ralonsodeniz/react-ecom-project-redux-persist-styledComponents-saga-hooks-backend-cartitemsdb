@@ -24,4 +24,9 @@ a {
 * {
   box-sizing: border-box;
 }
+
+#modal{
+  position: relative;
+  z-index: 999;
+}
 `;

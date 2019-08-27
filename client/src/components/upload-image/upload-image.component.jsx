@@ -12,6 +12,7 @@ import {
 } from "../../redux/user/user.selectors";
 import { selectAvatarLoading } from "../../redux/account/account.selectors";
 import { updateAvatarStart } from "../../redux/user/user.action";
+import { openModal } from "../../redux/account/account.actions";
 import { storage } from "../../firebase/firebase.utils";
 
 import {
@@ -29,7 +30,8 @@ const UploadImage = ({
   currentUserId,
   imageType,
   updateAvatarStart,
-  avatarLoading
+  avatarLoading,
+  openModal
 }) => {
   const [image, setImage] = useState(null);
   const [progress, setProgress] = useState(0);
@@ -40,7 +42,7 @@ const UploadImage = ({
   const handleFileChange = event => {
     // const file = fileInput.current.files[0]; // this is if we want to use refs instead of state to save the image file before uploading it
     if (event.target.files.length > 1)
-      return alert("plese choose just one file");
+      return openModal("Plese choose just one file");
     const eventFile = event.target.files[0];
     setImage(eventFile);
   };
@@ -51,8 +53,10 @@ const UploadImage = ({
         // here we check with a RegEx if the file type is authorized
         const imageSize = image.size / 1024 / 1024;
         if (imageSize > 1)
-          return alert(
-            `image file is ${imageSize} MB and the maximun file size is 1 MB`
+          return openModal(
+            `Avatar file is ${imageSize.toFixed(
+              2
+            )} MB and the maximun file size is 1 MB`
           );
         const storageRef = storage.ref(`${currentUserId}`); // we create the storage reference object seting the name of the folder where we want to save our
         const imageFile = storageRef.child(`${imageType}`); // we create the image file
@@ -82,10 +86,10 @@ const UploadImage = ({
           }
         });
       } else {
-        return alert(`image file type is not suported`);
+        return openModal(`Image file type is not suported`);
       }
     } else {
-      return alert("select an image first");
+      return openModal("Please select an image first");
     }
   };
 
@@ -143,7 +147,8 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = dispatch => ({
-  updateAvatarStart: avatarUrl => dispatch(updateAvatarStart(avatarUrl))
+  updateAvatarStart: avatarUrl => dispatch(updateAvatarStart(avatarUrl)),
+  openModal: text => dispatch(openModal(text))
 });
 
 export default connect(

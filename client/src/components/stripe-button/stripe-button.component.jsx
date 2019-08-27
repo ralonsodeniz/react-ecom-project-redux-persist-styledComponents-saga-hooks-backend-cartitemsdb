@@ -11,6 +11,7 @@ import {
 import { selectCartItems } from "../../redux/cart/cart.selectors";
 import { storeOrderStarts } from "../../redux/user/user.action";
 import { clearCart } from "../../redux/cart/cart.actions";
+import { openModal } from "../../redux/account/account.actions.js";
 import { AnonDataContext } from "../../providers/anon-data/anon-data.provider";
 import StripeCheckout from "react-stripe-checkout";
 
@@ -23,7 +24,8 @@ const StripeCheckoutButton = ({
   cartItems,
   storeOrderStarts,
   clearCart,
-  currentUserAddresses
+  currentUserAddresses,
+  openModal
 }) => {
   const [selectBilling, setSelectBilling] = useState(false);
   const [billingAddress, setBillingAddress] = useState({
@@ -106,7 +108,7 @@ const StripeCheckoutButton = ({
           postcode: "",
           street: ""
         });
-        alert("succesful payment");
+        openModal("Payment successful, your order has been placed");
       })
       .catch(error => {
         // REMOVE THIS FOR PRODUCTION
@@ -136,8 +138,8 @@ const StripeCheckoutButton = ({
           });
         }
         console.log("Payment Error: ", error);
-        alert(
-          "There was an issue with your payment! Please make sure you use the provided credit card."
+        openModal(
+          "There was an issue with your payment! order has not been placed"
         );
       });
   };
@@ -185,7 +187,8 @@ const mapStateToProps = createStructuredSelector({
 const mapDispatchToProps = dispatch => ({
   storeOrderStarts: (cartItems, price, billingAddress) =>
     dispatch(storeOrderStarts(cartItems, price, billingAddress)),
-  clearCart: () => dispatch(clearCart())
+  clearCart: () => dispatch(clearCart()),
+  openModal: text => dispatch(openModal(text))
 });
 
 export default connect(

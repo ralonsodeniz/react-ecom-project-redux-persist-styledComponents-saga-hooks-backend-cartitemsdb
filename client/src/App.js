@@ -8,6 +8,8 @@ import { createStructuredSelector } from "reselect";
 import Header from "./components/header/header.component";
 import Spinner from "./components/spinner/spinner.component";
 import ErrorBoundary from "./components/error-boundary/error-boundary.component";
+import Modal from "./components/modal/modal.component";
+import InnerModal from "./components/innder-modal/inner-modal.component";
 // import SignInAndUpPage from "./pages/sign-in-and-up/sign-in-and-up.component";
 // import CheckoutPage from "./pages/checkout/checkout.component";
 // we dont need firebase utils anymore in App.js since we are doing all the auth related code in sagas
@@ -21,6 +23,7 @@ import {
   selectCurrentUser,
   selectIsCheckingUser
 } from "./redux/user/user.selectors";
+import { selectModalHidden } from "./redux/account/account.selectors";
 import { DeviceTypeContext } from "./providers/device-type/device-type.provider";
 // import { selectCollectionsForPreview } from "./redux/shop/shop.selectors"; | we only need this selector when we need to udpate collections in firestore | this selector returns an array with the objects of the different collections
 
@@ -47,7 +50,12 @@ const AccountPageContainer = lazy(() =>
 // Suspense takes a fallback property that is something to render meanwhile the lazy component is being rendered
 // Suspense can wrap multiple components that are being lazy loaded
 
-const App = ({ checkUserSessionStart, currentUser, isCheckingUser }) => {
+const App = ({
+  checkUserSessionStart,
+  currentUser,
+  isCheckingUser,
+  modalHidden
+}) => {
   const { checkIfMobile } = useContext(DeviceTypeContext);
 
   // since we don't need state anymore nor to use the props inside the constructor  we don't need them
@@ -161,13 +169,19 @@ const App = ({ checkUserSessionStart, currentUser, isCheckingUser }) => {
           </Suspense>
         </ErrorBoundary>
       </Switch>
+      {!modalHidden ? (
+        <Modal>
+          <InnerModal />
+        </Modal>
+      ) : null}
     </div>
   );
 };
 
 const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser,
-  isCheckingUser: selectIsCheckingUser
+  isCheckingUser: selectIsCheckingUser,
+  modalHidden: selectModalHidden
   // collectionsArray: selectCollectionsForPreview | we only need collectionsArray: selectCollectionsForPreview when we use addCollectionAndDocuments() to update collections document in firestore
 });
 

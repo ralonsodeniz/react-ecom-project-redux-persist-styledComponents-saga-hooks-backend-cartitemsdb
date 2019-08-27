@@ -11,3 +11,13 @@ export const selectAvatarLoading = createSelector(
   [selectAccount],
   account => account.avatarLoading
 );
+
+export const selectModalText = createSelector(
+  [selectAccount],
+  account => account.modalText
+);
+
+export const selectModalHidden = createSelector(
+  [selectAccount],
+  account => account.modalHidden
+);

@@ -25,6 +25,9 @@ const CartIcon = (
 ) => {
   const { isMobile } = useContext(DeviceTypeContext);
 
+  // we need this because with the redux-persist we don't want to persist hidden value when we reload so we have filtered hidden from cart redux to be persisted
+  // as a side effect of it when the persistor is load hidden is not set so we use the ueEffect to initialize the hidden value when the component is mounted
+  // if we remove redux-persist we have to remove this useEffect
   useEffect(() => {
     toggleCartHidden();
   }, [toggleCartHidden]);

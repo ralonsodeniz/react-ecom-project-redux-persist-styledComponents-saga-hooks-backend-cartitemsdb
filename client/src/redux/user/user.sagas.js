@@ -22,7 +22,7 @@ import {
 import {
   signInSuccess,
   signInFailure,
-  signOutStart,
+  //  signOutStart,
   signOutSuccess,
   signOutFailure,
   // signUpSuccess,
@@ -36,6 +36,7 @@ import {
   updateDefaultAddress
 } from "./user.action"; // we need this actions for our sagas to trigger user reducer updates
 import { updateCart } from "../cart/cart.actions";
+import { openModal } from "../account/account.actions";
 
 // we are creating a generator function that does the redundant code of both signIn generator functions
 export function* getSnapshotFromUserAuth(userAuth, additionalData) {
@@ -69,8 +70,10 @@ export function* getSnapshotFromUserAuth(userAuth, additionalData) {
         emailAndPassSignUp
       })
     );
+    yield put(openModal(`Wellcome back ${displayName}`));
   } catch (error) {
     yield put(signInFailure(error));
+    yield put(openModal(error.message));
   }
 }
 
@@ -81,6 +84,7 @@ export function* CartOnSignIn(userAuth, currentCartItems) {
     yield put(updateCart(cartItems));
   } catch (error) {
     console.log(error, "failure updating user cart");
+    yield put(openModal(error.message));
   }
 }
 
@@ -94,6 +98,7 @@ export function* signInWithGoogle({ payload }) {
     yield call(CartOnSignIn, user, payload);
   } catch (error) {
     yield put(signInFailure(error));
+    yield put(openModal(error.message));
   }
 }
 
@@ -116,14 +121,17 @@ export function* signInWithEmail({ payload: { emailAndPassword, cartItems } }) {
         .map(provider => provider.providerId)
         .includes("password")
     ) {
-      alert("Please verify yoru email (add modals to manage this situations)");
       yield auth.signOut();
-      throw Error("Email needs to be verified");
+      throw Error(
+        "Please look in your inbox to verify the email before signing in"
+      );
     }
     yield call(getSnapshotFromUserAuth, user);
     yield call(CartOnSignIn, user, cartItems);
+    yield put(openModal(`Wellcome back ${user.displayName}`));
   } catch (error) {
     yield put(signInFailure(error));
+    yield put(openModal(error.message));
   }
 }
 
@@ -144,6 +152,7 @@ export function* isUserAuthenticated() {
     yield call(getSnapshotFromUserAuth, userAuth);
   } catch (error) {
     yield put(signInFailure(error)); // if there is an error on our check user firebase utility we return the error using the signInFailure since it is an error related to this
+    yield put(openModal(error.message));
   }
   yield put(checkUserSessionEnd());
 }
@@ -162,10 +171,12 @@ export function* signOut({ payload }) {
     yield call(storeCartItems, cartItems, userId);
     // we sign out the user from firebase auth using the .singOut() method from auth library
     yield auth.signOut();
+    yield put(openModal("Successfully signed out"));
     // and then we update our store to clear the user
     yield put(signOutSuccess());
   } catch (error) {
     yield put(signOutFailure(error));
+    yield put(openModal(error.message));
   }
 }
 
@@ -198,11 +209,17 @@ export function* signUp({
       displayName,
       emailAndPassSignUp
     });
-    alert("Please look in your inbox to verify the email before signing in");
+    yield user.updateProfile({ displayName });
+    yield put(
+      openModal(
+        "Please look in your inbox to verify the email before signing in"
+      )
+    );
     // we log out since we logged in when we created the user in the auth
     yield auth.signOut();
   } catch (error) {
     yield put(signUpFailure(error));
+    yield put(openModal(error.message));
   }
 }
 
@@ -224,6 +241,7 @@ export function* storeAvatarDB({ payload }) {
     yield put(updateAvatar(payload));
   } catch (error) {
     console.log("error adding avatar", error);
+    yield put(openModal(error.message));
   }
 }
 
@@ -237,6 +255,7 @@ export function* storeNewAddressDB({ payload }) {
     yield put(addNewAddress(payload));
   } catch (error) {
     console.log("error adding address", error);
+    yield put(openModal(error.message));
   }
 }
 
@@ -250,6 +269,7 @@ export function* removeStoredAddressDB({ payload }) {
     yield put(removeAddress(payload));
   } catch (error) {
     console.log("error removing addres", error);
+    yield put(openModal(error.message));
   }
 }
 
@@ -259,12 +279,31 @@ export function* removeAddressDB() {
 
 export function* updateStoredUserDataDB({ payload }) {
   try {
-    const { cartItems, currentUser } = payload;
-    const { displayName, email, newEmail } = yield updateUserDataInDB(payload);
+    // const { cartItems, currentUser } = payload;
+    const {
+      displayName,
+      email,
+      newDisplayName,
+      newEmail
+    } = yield updateUserDataInDB(payload);
     yield put(updateUserData({ displayName, email }));
-    if (newEmail) yield put(signOutStart(cartItems, currentUser));
+    if (newEmail) {
+      // we would need to trigger signOutStart if we change how we store the cartItems in the db from realtime to at the signout
+      // yield put(signOutStart(cartItems, currentUser));
+      // since we are storing cartItems in real time we signout using auth.signout directly and we trigger the singoutsuccess action
+      yield auth.signOut();
+      yield put(signOutSuccess());
+      yield put(
+        openModal(
+          "Please look in your inbox to verify the new email address before signing in"
+        )
+      );
+    }
+    if (!newEmail && newDisplayName)
+      yield put(openModal("Your display name has been changed"));
   } catch (error) {
     console.log("error udpating user data", error);
+    yield put(openModal(error.message));
   }
 }
 
@@ -278,10 +317,10 @@ export function* updateUserDataDB() {
 export function* updateStoredOrdersDB({ payload }) {
   try {
     const newOrders = yield storeOrderInDB(payload);
-    console.log(newOrders);
     yield put(storeOrder(newOrders));
   } catch (error) {
     console.log("error updating orders", error);
+    yield put(openModal(error.message));
   }
 }
 
@@ -295,6 +334,7 @@ export function* updateStoredDefaultAddressDB({ payload }) {
     yield put(updateDefaultAddress(payload));
   } catch (error) {
     console.log("error updating default address", error);
+    yield put(openModal(error.message));
   }
 }
 
@@ -308,8 +348,10 @@ export function* updateDefaultAddressDB() {
 export function* updateStoredPasswordDB({ payload }) {
   try {
     yield updatePasswordInDB(payload);
+    yield put(openModal("Your password has been updated"));
   } catch (error) {
     console.log("error updating password", error);
+    yield put(openModal(error.message));
   }
 }
 
@@ -321,8 +363,10 @@ export function* deleteStoredUserDB({ payload }) {
   try {
     yield deleteUserInDB(payload);
     yield put(signOutSuccess());
+    yield put(openModal("Your user has been deleted"));
   } catch (error) {
     yield put(signOutFailure(error));
+    yield put(openModal(error.message));
   }
 }
 
@@ -332,9 +376,15 @@ export function* deleteUserDB() {
 
 export function* sendVerificationEmail({ payload }) {
   try {
-    yield sendNewVerificationEmail(payload);
+    const alreadyVerified = yield sendNewVerificationEmail(payload);
+    if (alreadyVerified) {
+      yield put(openModal("Your email is already verified"));
+    } else {
+      yield put(openModal("Verification email resent"));
+    }
   } catch (error) {
     console.log("error sending new verification email", error);
+    yield put(openModal(error.message));
   }
 }
 
@@ -348,8 +398,12 @@ export function* newVerificationEmail() {
 export function* sendNewPassword({ payload }) {
   try {
     yield resetPassword(payload);
+    yield put(
+      openModal("An email with a password reset link has been sent to you")
+    );
   } catch (error) {
     console.log("error reseting password", error);
+    yield put(openModal(error.message));
   }
 }
 
