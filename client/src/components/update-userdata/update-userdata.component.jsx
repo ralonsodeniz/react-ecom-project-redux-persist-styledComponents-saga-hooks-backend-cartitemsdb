@@ -13,7 +13,7 @@ import {
 } from "../../redux/user/user.selectors";
 import { selectCartItems } from "../../redux/cart/cart.selectors.js";
 import {
-  updateUserDataStarts,
+  updateUserDataStart,
   updatePassword,
   deleteUser
 } from "../../redux/user/user.action";
@@ -28,7 +28,7 @@ import {
 } from "./update-userdata.styles";
 
 const UpdateUserdata = ({
-  updateUserDataStarts,
+  updateUserDataStart,
   currentUserDisplayName,
   currentUserEmail,
   currentUserSignUpEmailAndPAss,
@@ -58,7 +58,7 @@ const UpdateUserdata = ({
     event.preventDefault();
     if (displayName === "" && email === "")
       return openModal("You are trying to update nothing");
-    updateUserDataStarts({
+    updateUserDataStart({
       displayName,
       email,
       password,
@@ -208,8 +208,8 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = dispatch => ({
-  updateUserDataStarts: userCredentials =>
-    dispatch(updateUserDataStarts(userCredentials)),
+  updateUserDataStart: userCredentials =>
+    dispatch(updateUserDataStart(userCredentials)),
   updatePassword: passwordCredentials =>
     dispatch(updatePassword(passwordCredentials)),
   deleteUser: deleteCredentials => dispatch(deleteUser(deleteCredentials)),

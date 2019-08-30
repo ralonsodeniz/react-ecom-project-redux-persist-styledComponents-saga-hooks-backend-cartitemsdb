@@ -6,7 +6,7 @@ import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
 
 import {
-  updateDefaultAddressStarts,
+  updateDefaultAddressStart,
   addNewAddressStart
 } from "../../redux/user/user.action";
 import {
@@ -30,7 +30,7 @@ import {
 
 const UserAddressesCheckout = ({
   currentUserAddresses,
-  updateDefaultAddressStarts,
+  updateDefaultAddressStart,
   currentUser,
   addNewAddressStart
 }) => {
@@ -96,7 +96,7 @@ const UserAddressesCheckout = ({
                 ) : (
                   <MakeDefaultAddressButton
                     inverted
-                    onClick={() => updateDefaultAddressStarts(addressIndex)}
+                    onClick={() => updateDefaultAddressStart(addressIndex)}
                   >
                     select address
                   </MakeDefaultAddressButton>
@@ -200,8 +200,8 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = dispatch => ({
-  updateDefaultAddressStarts: addressIndex =>
-    dispatch(updateDefaultAddressStarts(addressIndex)),
+  updateDefaultAddressStart: addressIndex =>
+    dispatch(updateDefaultAddressStart(addressIndex)),
   addNewAddressStart: address => dispatch(addNewAddressStart(address))
 });
 

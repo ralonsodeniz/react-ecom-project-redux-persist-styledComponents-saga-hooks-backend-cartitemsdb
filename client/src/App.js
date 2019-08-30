@@ -16,7 +16,7 @@ import InnerModal from "./components/innder-modal/inner-modal.component";
 // import {
 //   auth,
 //   createUserProfileDocument
-//   // addCollectionAndDocuments only needed to update the collections in the firestore
+//   // addCollectionAndDocumentsToFB only needed to update the collections in the firestore
 // } from "./firebase/firebase.utils"; // we need this to make our app aware of a google auth process
 import { checkUserSessionStart } from "./redux/user/user.action"; // in order to dispatch the action and be able to use it as a prop we need to import it
 import {
@@ -182,7 +182,7 @@ const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser,
   isCheckingUser: selectIsCheckingUser,
   modalHidden: selectModalHidden
-  // collectionsArray: selectCollectionsForPreview | we only need collectionsArray: selectCollectionsForPreview when we use addCollectionAndDocuments() to update collections document in firestore
+  // collectionsArray: selectCollectionsForPreview | we only need collectionsArray: selectCollectionsForPreview when we use addCollectionAndDocumentsToFB() to update collections document in firestore
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -1,4 +1,4 @@
-import { auth, storeCartItems } from "../../firebase/firebase.utils";
+import { auth, storeCartItemsInFB } from "../../firebase/firebase.utils";
 // Utility functions allow us to keep our files clean and organize functions that we may need in multiple files in one location
 export const addItemToCart = (cartItems, cartItemToAdd) => {
   // we are gonna look into the cartItems we have if the item we want to add already exists. If so, we will increase the item count instead of adding a new item object to the array
@@ -21,7 +21,7 @@ export const addItemToCart = (cartItems, cartItemToAdd) => {
   // <- Comment if not wanted to update firestore on each item modified from cart ->
   if (auth.currentUser) {
     const userId = auth.currentUser.uid;
-    storeCartItems(newCartItems, userId);
+    storeCartItemsInFB(newCartItems, userId);
   }
   // <- end of firestore realtime update ->
   return newCartItems;
@@ -36,7 +36,7 @@ export const clearItemFromCart = (cartItems, cartItemToClear) => {
   // <- Comment if not wanted to update firestore on each item modified from cart ->
   if (auth.currentUser) {
     const userId = auth.currentUser.uid;
-    storeCartItems(newCartItems, userId);
+    storeCartItemsInFB(newCartItems, userId);
   }
   // <- end of firestore realtime update ->
   return newCartItems;
@@ -47,7 +47,7 @@ export const clearAllItemsFromcart = () => {
   // <- Comment if not wanted to update firestore on each item modified from cart ->
   if (auth.currentUser) {
     const userId = auth.currentUser.uid;
-    storeCartItems(newCartItems, userId);
+    storeCartItemsInFB(newCartItems, userId);
   }
   // <- end of firestore realtime update ->
   return newCartItems;
@@ -69,7 +69,7 @@ export const removeItemFromCart = (cartItems, cartItemToRemove) => {
   // <- Comment if not wanted to update firestore on each item modified from cart ->
   if (auth.currentUser) {
     const userId = auth.currentUser.uid;
-    storeCartItems(newCartItems, userId);
+    storeCartItemsInFB(newCartItems, userId);
   }
   // <- end of firestore realtime update ->
   return newCartItems;
@@ -114,7 +114,7 @@ export const mergeCarts = (cartItems, currentCartItems) => {
   // <- Comment if not wanted to update firestore on each item modified from cart ->
   if (auth.currentUser) {
     const userId = auth.currentUser.uid;
-    storeCartItems(mergedCart, userId);
+    storeCartItemsInFB(mergedCart, userId);
   }
   // <- end of firestore realtime update ->
   return mergedCart;

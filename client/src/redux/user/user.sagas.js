@@ -4,20 +4,20 @@ import UserActionTypes from "./user.types";
 import {
   auth,
   googleProvider,
-  createUserProfileDocument,
-  getCurrentUser,
-  storeCartItems,
-  updateCartOnSignIn,
-  updateAvatarInDB,
-  addNewAddressInDB,
-  removeAddressInDB,
-  updateUserDataInDB,
-  storeOrderInDB,
-  updateDefaultAddressInDB,
-  updatePasswordInDB,
-  deleteUserInDB,
-  sendNewVerificationEmail,
-  resetPassword,
+  createUserProfileDocumentInFB,
+  getCurrentUserFromFB,
+  storeCartItemsInFB,
+  updateCartOnSignInFromFB,
+  updateAvatarInFB,
+  addNewAddressInFB,
+  removeAddressInFB,
+  updateUserDataInFB,
+  storeOrderInFB,
+  updateDefaultAddressInFB,
+  updatePasswordInFB,
+  deleteUserInFB,
+  sendNewVerificationEmailFromFB,
+  resetPasswordFromFB,
   actionCodeSettings
 } from "../../firebase/firebase.utils"; // we need this from firebase utils for our generator function
 import {
@@ -29,12 +29,12 @@ import {
   // signUpSuccess,
   signUpFailure,
   checkUserSessionEnd,
-  updateAvatar,
-  addNewAddress,
-  removeAddress,
-  updateUserData,
-  storeOrder,
-  updateDefaultAddress
+  updateAvatarEnd,
+  addNewAddressEnd,
+  removeAddressEnd,
+  updateUserDataEnd,
+  storeOrderEnd,
+  updateDefaultAddressEnd
 } from "./user.action"; // we need this actions for our sagas to trigger user reducer updates
 import { updateCart } from "../cart/cart.actions";
 import { openModal } from "../account/account.actions";
@@ -44,7 +44,7 @@ export function* getSnapshotFromUserAuth(userAuth, additionalData) {
   try {
     // with the user object inside userAuth we get the userRef to create the snapshot at the same time we register the user in the firestore if it does not exist using createUserProfileDocument
     const userRef = yield call(
-      createUserProfileDocument,
+      createUserProfileDocumentInFB,
       userAuth,
       additionalData
     ); // remember calls first parameter is the function we want to run and the other parameters are the arguments of the function
@@ -80,7 +80,11 @@ export function* getSnapshotFromUserAuth(userAuth, additionalData) {
 
 // generator function to update cart on sign in
 export function* CartOnSignIn(userAuth, currentCartItems) {
-  const cartItems = yield call(updateCartOnSignIn, userAuth, currentCartItems);
+  const cartItems = yield call(
+    updateCartOnSignInFromFB,
+    userAuth,
+    currentCartItems
+  );
   try {
     yield put(updateCart(cartItems));
   } catch (error) {
@@ -144,7 +148,7 @@ export function* onEmailSignInStart() {
 // we need a firebase util to actually check if a user is signed in that return us a Promise oriented solution that sagas can yield for
 export function* isUserAuthenticated() {
   try {
-    const userAuth = yield getCurrentUser(); // we dont use call here because this is a Promise | we get the userAuth if there is a user logged in
+    const userAuth = yield getCurrentUserFromFB(); // we dont use call here because this is a Promise | we get the userAuth if there is a user logged in
     // if the user is null (no user) we return, we dont want to do anything
     if (!userAuth) {
       yield put(checkUserSessionEnd());
@@ -158,7 +162,7 @@ export function* isUserAuthenticated() {
   yield put(checkUserSessionEnd());
 }
 
-export function* onCheckUserSession() {
+export function* onCheckUserSessionStart() {
   yield takeLatest(
     UserActionTypes.CHECK_USER_SESSION_START,
     isUserAuthenticated
@@ -169,7 +173,7 @@ export function* onCheckUserSession() {
 export function* signOut({ payload }) {
   try {
     const { cartItems, userId } = payload;
-    yield call(storeCartItems, cartItems, userId);
+    yield call(storeCartItemsInFB, cartItems, userId);
     // we sign out the user from firebase auth using the .singOut() method from auth library
     yield auth.signOut();
     yield put(openModal("Successfully signed out"));
@@ -203,7 +207,7 @@ export function* signUp({
     //   })
     // ); // displayName and emailAndPassSignUp we have to pass it as an object since inside createUserProfileDocument is spreaded and if we pass it like the string it is it will create an array for each letter instead of creating the displayname item
     // instead we create the user in the db and alert the user to verify its email
-    yield call(createUserProfileDocument, user, {
+    yield call(createUserProfileDocumentInFB, user, {
       displayName,
       emailAndPassSignUp
     });
@@ -233,49 +237,49 @@ export function* onSignUpSuccess() {
   yield takeLatest(UserActionTypes.SIGN_UP_SUCCESS, signInAfterSignUp);
 }
 
-export function* storeAvatarDB({ payload }) {
+export function* storeAvatar({ payload }) {
   try {
-    yield call(updateAvatarInDB, payload);
-    yield put(updateAvatar(payload));
+    yield call(updateAvatarInFB, payload);
+    yield put(updateAvatarEnd(payload));
   } catch (error) {
     console.log("error adding avatar", error);
     yield put(openModal(error.message));
   }
 }
 
-export function* updateAvatarDB() {
-  yield takeLatest(UserActionTypes.UPDATE_AVATAR_START, storeAvatarDB);
+export function* onUpdateAvatarStart() {
+  yield takeLatest(UserActionTypes.UPDATE_AVATAR_START, storeAvatar);
 }
 
-export function* storeNewAddressDB({ payload }) {
+export function* storeAddress({ payload }) {
   try {
-    yield addNewAddressInDB(payload);
-    yield put(addNewAddress(payload));
+    yield addNewAddressInFB(payload);
+    yield put(addNewAddressEnd(payload));
   } catch (error) {
     console.log("error adding address", error);
     yield put(openModal(error.message));
   }
 }
 
-export function* addNewAddressDB() {
-  yield takeLatest(UserActionTypes.ADD_ADDRESS_START, storeNewAddressDB);
+export function* onAddAddressStart() {
+  yield takeLatest(UserActionTypes.ADD_ADDRESS_START, storeAddress);
 }
 
-export function* removeStoredAddressDB({ payload }) {
+export function* removeStoredAddress({ payload }) {
   try {
-    yield removeAddressInDB(payload);
-    yield put(removeAddress(payload));
+    yield removeAddressInFB(payload);
+    yield put(removeAddressEnd(payload));
   } catch (error) {
     console.log("error removing addres", error);
     yield put(openModal(error.message));
   }
 }
 
-export function* removeAddressDB() {
-  yield takeLatest(UserActionTypes.REMOVE_ADDRESS_START, removeStoredAddressDB);
+export function* onRemoveAddressStart() {
+  yield takeLatest(UserActionTypes.REMOVE_ADDRESS_START, removeStoredAddress);
 }
 
-export function* updateStoredUserDataDB({ payload }) {
+export function* updateStoredUserData({ payload }) {
   try {
     // const { cartItems, currentUser } = payload;
     const {
@@ -283,8 +287,8 @@ export function* updateStoredUserDataDB({ payload }) {
       email,
       newDisplayName,
       newEmail
-    } = yield updateUserDataInDB(payload);
-    yield put(updateUserData({ displayName, email }));
+    } = yield updateUserDataInFB(payload);
+    yield put(updateUserDataEnd({ displayName, email }));
     if (newEmail) {
       // we would need to trigger signOutStart if we change how we store the cartItems in the db from realtime to at the signout
       // yield put(signOutStart(cartItems, currentUser));
@@ -305,47 +309,44 @@ export function* updateStoredUserDataDB({ payload }) {
   }
 }
 
-export function* updateUserDataDB() {
-  yield takeLatest(
-    UserActionTypes.UPDATE_USERDATA_STARTS,
-    updateStoredUserDataDB
-  );
+export function* onUpdateUserDataStart() {
+  yield takeLatest(UserActionTypes.UPDATE_USERDATA_START, updateStoredUserData);
 }
 
-export function* updateStoredOrdersDB({ payload }) {
+export function* updateStoredOrders({ payload }) {
   try {
-    const newOrders = yield storeOrderInDB(payload);
-    yield put(storeOrder(newOrders));
+    const newOrders = yield storeOrderInFB(payload);
+    yield put(storeOrderEnd(newOrders));
   } catch (error) {
     console.log("error updating orders", error);
     yield put(openModal(error.message));
   }
 }
 
-export function* updateOrdersDB() {
-  yield takeLatest(UserActionTypes.STORE_ORDER_STARTS, updateStoredOrdersDB);
+export function* onStoreOrderStart() {
+  yield takeLatest(UserActionTypes.STORE_ORDER_START, updateStoredOrders);
 }
 
-export function* updateStoredDefaultAddressDB({ payload }) {
+export function* updateStoredDefaultAddress({ payload }) {
   try {
-    yield updateDefaultAddressInDB(payload);
-    yield put(updateDefaultAddress(payload));
+    yield updateDefaultAddressInFB(payload);
+    yield put(updateDefaultAddressEnd(payload));
   } catch (error) {
     console.log("error updating default address", error);
     yield put(openModal(error.message));
   }
 }
 
-export function* updateDefaultAddressDB() {
+export function* onSelectDefaultAddressStart() {
   yield takeLatest(
-    UserActionTypes.SELECT_DEFAULT_ADDRESS_STARTS,
-    updateStoredDefaultAddressDB
+    UserActionTypes.SELECT_DEFAULT_ADDRESS_START,
+    updateStoredDefaultAddress
   );
 }
 
-export function* updateStoredPasswordDB({ payload }) {
+export function* updateStoredPassword({ payload }) {
   try {
-    yield updatePasswordInDB(payload);
+    yield updatePasswordInFB(payload);
     yield put(openModal("Your password has been updated"));
   } catch (error) {
     console.log("error updating password", error);
@@ -353,13 +354,13 @@ export function* updateStoredPasswordDB({ payload }) {
   }
 }
 
-export function* updatePasswordDB() {
-  yield takeLatest(UserActionTypes.UPDATE_PASSWORD, updateStoredPasswordDB);
+export function* onUpdatePassword() {
+  yield takeLatest(UserActionTypes.UPDATE_PASSWORD, updateStoredPassword);
 }
 
-export function* deleteStoredUserDB({ payload }) {
+export function* deleteStoredUser({ payload }) {
   try {
-    yield deleteUserInDB(payload);
+    yield deleteUserInFB(payload);
     yield put(signOutSuccess());
     yield put(openModal("Your user has been deleted"));
   } catch (error) {
@@ -368,13 +369,13 @@ export function* deleteStoredUserDB({ payload }) {
   }
 }
 
-export function* deleteUserDB() {
-  yield takeLatest(UserActionTypes.DELETE_USER, deleteStoredUserDB);
+export function* onDeleteUser() {
+  yield takeLatest(UserActionTypes.DELETE_USER, deleteStoredUser);
 }
 
-export function* sendVerificationEmail({ payload }) {
+export function* resendVerificationEmail({ payload }) {
   try {
-    const alreadyVerified = yield sendNewVerificationEmail(payload);
+    const alreadyVerified = yield sendNewVerificationEmailFromFB(payload);
     if (alreadyVerified) {
       yield put(openModal("Your email is already verified"));
     } else {
@@ -386,16 +387,16 @@ export function* sendVerificationEmail({ payload }) {
   }
 }
 
-export function* newVerificationEmail() {
+export function* onResendVerificationEmail() {
   yield takeLatest(
     UserActionTypes.RESEND_VERIFICATION_EMAIL,
-    sendVerificationEmail
+    resendVerificationEmail
   );
 }
 
 export function* sendNewPassword({ payload }) {
   try {
-    yield resetPassword(payload);
+    yield resetPasswordFromFB(payload);
     yield put(
       openModal("An email with a password reset link has been sent to you")
     );
@@ -405,7 +406,7 @@ export function* sendNewPassword({ payload }) {
   }
 }
 
-export function* resetUserPassword() {
+export function* onResetPassword() {
   yield takeLatest(UserActionTypes.RESET_PASSWORD, sendNewPassword);
 }
 
@@ -414,19 +415,19 @@ export function* userSagas() {
   yield all([
     call(onGoogleSignInStart),
     call(onEmailSignInStart),
-    call(onCheckUserSession),
+    call(onCheckUserSessionStart),
     call(onSignOutStart),
     call(onSignUpStart),
     call(onSignUpSuccess),
-    call(updateAvatarDB),
-    call(addNewAddressDB),
-    call(removeAddressDB),
-    call(updateUserDataDB),
-    call(updateOrdersDB),
-    call(updateDefaultAddressDB),
-    call(updatePasswordDB),
-    call(deleteUserDB),
-    call(newVerificationEmail),
-    call(resetUserPassword)
+    call(onUpdateAvatarStart),
+    call(onAddAddressStart),
+    call(onRemoveAddressStart),
+    call(onUpdateUserDataStart),
+    call(onStoreOrderStart),
+    call(onSelectDefaultAddressStart),
+    call(onUpdatePassword),
+    call(onDeleteUser),
+    call(onResendVerificationEmail),
+    call(onResetPassword)
   ]);
 }

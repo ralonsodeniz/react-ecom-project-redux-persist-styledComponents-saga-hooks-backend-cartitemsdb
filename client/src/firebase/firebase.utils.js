@@ -27,7 +27,10 @@ export const actionCodeSettings = {
   url: redirectUrl
 };
 
-export const createUserProfileDocument = async (userAuth, additionalData) => {
+export const createUserProfileDocumentInFB = async (
+  userAuth,
+  additionalData
+) => {
   // this is the function we are going to use to crete the users profiles in the db
   if (!userAuth) return; // if there is not user we quit the function
 
@@ -63,7 +66,7 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
 };
 
 // we create a new firebase firestore util to export our shop data to firestore
-export const addCollectionAndDocuments = async (
+export const addCollectionAndDocumentsToFB = async (
   collectionKey,
   objectsToAdd
 ) => {
@@ -121,7 +124,7 @@ export const convertCollectionsSnapshotToMap = collections => {
 // we have to mimic the functionality we may encounter when we do not have firebase as the backend
 // we will use onAuthStateChange to check if there is a user logged in and if so to get it and just after that we close the observable listener
 // we need it in a Promise pattern since our sagas need the promise to yield
-export const getCurrentUser = () => {
+export const getCurrentUserFromFB = () => {
   try {
     return new Promise((resolve, reject) => {
       const unsubscribe = auth.onAuthStateChanged(userAuth => {
@@ -136,7 +139,7 @@ export const getCurrentUser = () => {
   }
 };
 
-export const storeCartItems = async (cartItems, userId) => {
+export const storeCartItemsInFB = async (cartItems, userId) => {
   const userRef = firestore.doc(`users/${userId}`);
   try {
     await userRef.update({ cartItems: cartItems });
@@ -146,7 +149,7 @@ export const storeCartItems = async (cartItems, userId) => {
   }
 };
 
-export const updateCartOnSignIn = async (userAuth, currentCartItems) => {
+export const updateCartOnSignInFromFB = async (userAuth, currentCartItems) => {
   const userRef = firestore.doc(`users/${userAuth.uid}`);
   const userSnapshot = await userRef.get();
   let { cartItems } = userSnapshot.data();
@@ -162,7 +165,7 @@ export const updateCartOnSignIn = async (userAuth, currentCartItems) => {
   }
 };
 
-export const updateAvatarInDB = async url => {
+export const updateAvatarInFB = async url => {
   const userId = auth.currentUser.uid;
   const userRef = firestore.doc(`users/${userId}`);
   try {
@@ -173,7 +176,7 @@ export const updateAvatarInDB = async url => {
   }
 };
 
-export const addNewAddressInDB = async address => {
+export const addNewAddressInFB = async address => {
   const userId = auth.currentUser.uid;
   const userRef = firestore.doc(`users/${userId}`);
   const userSnapshot = await userRef.get();
@@ -190,7 +193,7 @@ export const addNewAddressInDB = async address => {
   }
 };
 
-export const removeAddressInDB = async address => {
+export const removeAddressInFB = async address => {
   const userId = auth.currentUser.uid;
   const userRef = firestore.doc(`users/${userId}`);
   const userSnapshot = await userRef.get();
@@ -206,7 +209,7 @@ export const removeAddressInDB = async address => {
   }
 };
 
-export const updateUserDataInDB = async userCredentials => {
+export const updateUserDataInFB = async userCredentials => {
   const user = auth.currentUser;
   const userId = user.uid;
   const userRef = firestore.doc(`users/${userId}`);
@@ -245,7 +248,7 @@ export const updateUserDataInDB = async userCredentials => {
   return { displayName, email, newDisplayName, newEmail };
 };
 
-export const storeOrderInDB = async ({ order, price, billingAddress }) => {
+export const storeOrderInFB = async ({ order, price, billingAddress }) => {
   const userId = auth.currentUser.uid;
   const userRef = firestore.doc(`users/${userId}`);
   const userSnapshot = await userRef.get();
@@ -320,7 +323,7 @@ export const storeOrderInDB = async ({ order, price, billingAddress }) => {
   }
 };
 
-export const updateDefaultAddressInDB = async addressIndex => {
+export const updateDefaultAddressInFB = async addressIndex => {
   const userId = auth.currentUser.uid;
   const userRef = firestore.doc(`users/${userId}`);
   const userSnapshot = await userRef.get();
@@ -336,7 +339,7 @@ export const updateDefaultAddressInDB = async addressIndex => {
   }
 };
 
-export const updatePasswordInDB = async passwordCredentials => {
+export const updatePasswordInFB = async passwordCredentials => {
   const user = auth.currentUser;
   const { newPassword, password } = passwordCredentials;
   try {
@@ -352,7 +355,7 @@ export const updatePasswordInDB = async passwordCredentials => {
   }
 };
 
-export const deleteUserInDB = async deleteCredentials => {
+export const deleteUserInFB = async deleteCredentials => {
   const { currentUserSignUpEmailAndPAss } = deleteCredentials;
   const user = auth.currentUser;
   const userId = user.uid;
@@ -376,7 +379,7 @@ export const deleteUserInDB = async deleteCredentials => {
   }
 };
 
-export const sendNewVerificationEmail = async userCredentials => {
+export const sendNewVerificationEmailFromFB = async userCredentials => {
   const { email, password } = userCredentials;
   let alreadyVerified = false;
   try {
@@ -403,7 +406,7 @@ export const sendNewVerificationEmail = async userCredentials => {
   return alreadyVerified;
 };
 
-export const resetPassword = async email => {
+export const resetPasswordFromFB = async email => {
   try {
     await auth.sendPasswordResetEmail(email, actionCodeSettings);
   } catch (error) {

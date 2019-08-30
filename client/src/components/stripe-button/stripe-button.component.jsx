@@ -9,7 +9,7 @@ import {
   selectCurrentUserAddreses
 } from "../../redux/user/user.selectors";
 import { selectCartItems } from "../../redux/cart/cart.selectors";
-import { storeOrderStarts } from "../../redux/user/user.action";
+import { storeOrderStart } from "../../redux/user/user.action";
 import { clearCart } from "../../redux/cart/cart.actions";
 import { openModal } from "../../redux/account/account.actions.js";
 import { AnonDataContext } from "../../providers/anon-data/anon-data.provider";
@@ -22,7 +22,7 @@ const StripeCheckoutButton = ({
   currentUser,
   currentUserEmail,
   cartItems,
-  storeOrderStarts,
+  storeOrderStart,
   clearCart,
   currentUserAddresses,
   openModal
@@ -39,7 +39,7 @@ const StripeCheckoutButton = ({
 
   useEffect(() => {
     if (billingAddress.addressName !== "") {
-      storeOrderStarts(cartItems, price, billingAddress);
+      storeOrderStart(cartItems, price, billingAddress);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [billingAddress]);
@@ -67,21 +67,52 @@ const StripeCheckoutButton = ({
         stripeEmail: token.email,
         stripeToken: token.id,
         stripeTokenType: token.type,
-        stripeBillingName: addresses.billing_name || currentUser ? currentUserAddresses[0].addressName : anonData.name, 
-        stripeBillingAddressLine1: addresses.billing_address_line1 || currentUser ? currentUserAddresses[0].street : anonData.street,
-        stripeBillingAddressZip: addresses.billing_address_zip || currentUser ? currentUserAddresses[0].postcode: anonData.postcode,
+        stripeBillingName:
+          addresses.billing_name || currentUser
+            ? currentUserAddresses[0].addressName
+            : anonData.name,
+        stripeBillingAddressLine1:
+          addresses.billing_address_line1 || currentUser
+            ? currentUserAddresses[0].street
+            : anonData.street,
+        stripeBillingAddressZip:
+          addresses.billing_address_zip || currentUser
+            ? currentUserAddresses[0].postcode
+            : anonData.postcode,
         stripeBillingAddressState: addresses.billing_address_state || "",
-        stripeBillingAddressCity: addresses.billing_address_city || currentUser ? currentUserAddresses[0].city : anonData.city,
-        stripeBillingAddressCountry: addresses.billing_address_country || currentUser ? currentUserAddresses[0].country : anonData.country,
-        stripeBillingAddressCountryCode: addresses.billing_address_country_code || "",
-        stripeShippingName: addresses.shipping_name || currentUser ? currentUserAddresses[0].addressName : anonData.name, 
-        stripeShippingAddressLine1: addresses.shipping_address_line1 || currentUser ? currentUserAddresses[0].street : anonData.street,
-        stripeShippingAddressZip: addresses.shipping_address_zip || currentUser ? currentUserAddresses[0].postcode: anonData.postcode,
+        stripeBillingAddressCity:
+          addresses.billing_address_city || currentUser
+            ? currentUserAddresses[0].city
+            : anonData.city,
+        stripeBillingAddressCountry:
+          addresses.billing_address_country || currentUser
+            ? currentUserAddresses[0].country
+            : anonData.country,
+        stripeBillingAddressCountryCode:
+          addresses.billing_address_country_code || "",
+        stripeShippingName:
+          addresses.shipping_name || currentUser
+            ? currentUserAddresses[0].addressName
+            : anonData.name,
+        stripeShippingAddressLine1:
+          addresses.shipping_address_line1 || currentUser
+            ? currentUserAddresses[0].street
+            : anonData.street,
+        stripeShippingAddressZip:
+          addresses.shipping_address_zip || currentUser
+            ? currentUserAddresses[0].postcode
+            : anonData.postcode,
         stripeShippingAddressState: addresses.shipping_address_state || "",
-        stripeShippingAddressCity: addresses.shipping_address_city || currentUser ? currentUserAddresses[0].city : anonData.city,
-        stripeShippingAddressCountry: addresses.shipping_address_country || currentUser ? currentUserAddresses[0].country : anonData.country,
-        stripeShippingAddressCountryCode: addresses.shipping_address_country_code || "",
-
+        stripeShippingAddressCity:
+          addresses.shipping_address_city || currentUser
+            ? currentUserAddresses[0].city
+            : anonData.city,
+        stripeShippingAddressCountry:
+          addresses.shipping_address_country || currentUser
+            ? currentUserAddresses[0].country
+            : anonData.country,
+        stripeShippingAddressCountryCode:
+          addresses.shipping_address_country_code || ""
       }
     })
       .then(response => {
@@ -146,35 +177,37 @@ const StripeCheckoutButton = ({
 
   return (
     console.log(anonData),
-    <StripeButtonContainer>
-      <OptionText onClick={handleBilling}>
-        Different billing address{" "}
-        {selectBilling ? <span>&#9745;</span> : <span>&#9744;</span>}
-      </OptionText>
-      <StripeCheckout
-        currency="EUR"
-        label="Pay with 💳"
-        name="CRWN Clothing Ltd."
-        image="https://svgshare.com/i/CUz.svg"
-        description={`Your total is ${price}€`}
-        amount={priceForStripe}
-        panelLabel="Pay Now"
-        token={onToken}
-        stripeKey={publishableKey}
-        email={
-          currentUser
-            ? currentUserEmail
-            : anonData.email !== ""
-            ? anonData.email
-            : undefined
-        }
-        disabled={
-          cartItems.length < 1 ||
-          (anonData.name === "" && currentUserAddresses.length === 0)
-        }
-        billingAddress={selectBilling}
-      />
-    </StripeButtonContainer>
+    (
+      <StripeButtonContainer>
+        <OptionText onClick={handleBilling}>
+          Different billing address{" "}
+          {selectBilling ? <span>&#9745;</span> : <span>&#9744;</span>}
+        </OptionText>
+        <StripeCheckout
+          currency="EUR"
+          label="Pay with 💳"
+          name="CRWN Clothing Ltd."
+          image="https://svgshare.com/i/CUz.svg"
+          description={`Your total is ${price}€`}
+          amount={priceForStripe}
+          panelLabel="Pay Now"
+          token={onToken}
+          stripeKey={publishableKey}
+          email={
+            currentUser
+              ? currentUserEmail
+              : anonData.email !== ""
+              ? anonData.email
+              : undefined
+          }
+          disabled={
+            cartItems.length < 1 ||
+            (anonData.name === "" && currentUserAddresses.length === 0)
+          }
+          billingAddress={selectBilling}
+        />
+      </StripeButtonContainer>
+    )
   );
 };
 
@@ -186,8 +219,8 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = dispatch => ({
-  storeOrderStarts: (cartItems, price, billingAddress) =>
-    dispatch(storeOrderStarts(cartItems, price, billingAddress)),
+  storeOrderStart: (cartItems, price, billingAddress) =>
+    dispatch(storeOrderStart(cartItems, price, billingAddress)),
   clearCart: () => dispatch(clearCart()),
   openModal: text => dispatch(openModal(text))
 });

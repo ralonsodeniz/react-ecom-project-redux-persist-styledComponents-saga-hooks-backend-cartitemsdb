@@ -77,7 +77,7 @@ export const updateAvatarStart = url => ({
   payload: url
 });
 
-export const updateAvatar = url => ({
+export const updateAvatarEnd = url => ({
   type: UserActionTypes.UPDATE_AVATAR,
   payload: url
 });
@@ -87,7 +87,7 @@ export const addNewAddressStart = address => ({
   payload: address
 });
 
-export const addNewAddress = address => ({
+export const addNewAddressEnd = address => ({
   type: UserActionTypes.ADD_ADDRESS,
   payload: address
 });
@@ -97,37 +97,37 @@ export const removeAddressStart = address => ({
   payload: address
 });
 
-export const removeAddress = address => ({
+export const removeAddressEnd = address => ({
   type: UserActionTypes.REMOVE_ADDRESS,
   payload: address
 });
 
-export const updateUserDataStarts = userCredentials => ({
-  type: UserActionTypes.UPDATE_USERDATA_STARTS,
+export const updateUserDataStart = userCredentials => ({
+  type: UserActionTypes.UPDATE_USERDATA_START,
   payload: userCredentials
 });
 
-export const updateUserData = userCredentials => ({
+export const updateUserDataEnd = userCredentials => ({
   type: UserActionTypes.UPDATE_USERDATA,
   payload: userCredentials
 });
 
-export const storeOrderStarts = (cartItems, price, billingAddress) => ({
-  type: UserActionTypes.STORE_ORDER_STARTS,
+export const storeOrderStart = (cartItems, price, billingAddress) => ({
+  type: UserActionTypes.STORE_ORDER_START,
   payload: { order: cartItems, price, billingAddress }
 });
 
-export const storeOrder = orders => ({
+export const storeOrderEnd = orders => ({
   type: UserActionTypes.STORE_ORDER,
   payload: orders
 });
 
-export const updateDefaultAddressStarts = addressIndex => ({
-  type: UserActionTypes.SELECT_DEFAULT_ADDRESS_STARTS,
+export const updateDefaultAddressStart = addressIndex => ({
+  type: UserActionTypes.SELECT_DEFAULT_ADDRESS_START,
   payload: addressIndex
 });
 
-export const updateDefaultAddress = addressIndex => ({
+export const updateDefaultAddressEnd = addressIndex => ({
   type: UserActionTypes.SELECT_DEFAULT_ADDRESS,
   payload: addressIndex
 });

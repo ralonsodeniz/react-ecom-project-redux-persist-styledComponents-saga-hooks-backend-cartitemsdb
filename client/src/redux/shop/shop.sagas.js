@@ -44,7 +44,7 @@ export function* fetchCollectionsAsync() {
 // we create our first saga using the generator functions
 // it is going to listen whenever an specific action type we want comes in and execute another saga when this happens
 // this is going to be a saga middleware we add to the store
-export function* fetchCollectionsStart() {
+export function* onfetchCollectionsStart() {
   // the first parameter for takeEvery is the action type to listen, the second is another generator function that runs in response of the type action we are listening for
   yield takeLatest(
     ShopActionTypes.FETCH_COLLECTIONS_START,
@@ -54,7 +54,7 @@ export function* fetchCollectionsStart() {
 
 // root shop saga
 export function* shopSaga() {
-  yield all([call(fetchCollectionsStart)]);
+  yield all([call(onfetchCollectionsStart)]);
 }
 
 // we have seen that generator functions pause when they see the yield keyword, after executing the code of that line, and waits for .next() to continue
