@@ -4,6 +4,8 @@
 
 Ecommerce platform developed with React and Firebase. Users can register, add items to their carts from different collections, manage the items at the cart, make payments using Stripe platform and access their user page to modify personal data, directions and check orders.
 
+Extended version of the final project from the [Complete React Developer in 2020 Udemy course](https://www.udemy.com/course/complete-react-developer-zero-to-mastery/) by [Andrei Neagoie](https://github.com/aneagoie).
+
 ## Technologies used
 
 ### Front-End
